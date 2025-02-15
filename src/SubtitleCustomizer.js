@@ -185,14 +185,14 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
         backgroundColor: appSettings.subtitleSettings.background,
         textShadow: `${appSettings.subtitleSettings.textShadow ? '4px 4px 10px rgba(0, 0, 0, 1)' : 'unset'}`
       }}>
-        {appSettings.subtitleSettings.language === "english" ? <div style={{ display: 'inline-block' }}>
+        <div style={{ display: 'inline-block' }}>
           <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, textAlign: 'center', display: 'block' }}>
           {appSettings.subtitleSettings.language === "english" ? "This is a preview of subtitles" : "Esta es una vista previa de los subtítulos" }
           </div>
           <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, textAlign: 'center', display: 'block' }}>
           {appSettings.subtitleSettings.language === "english" ? "This is another line showing preview of subtitles" : " Esta es otra línea que muestra una vista previa de los subtítulos" }
           </div>
-        </div> : ""}
+        </div>
       </div>
 
       <Stack direction="row" sx={{ bgcolor: 'rgba(0,0,0,0.8)', padding: '20px', borderRadius: '15px', width: '500px' }} spacing={1}>
