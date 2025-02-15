@@ -203,7 +203,7 @@ export default function App() {
               style={{
                 position: 'absolute',
                 bottom: `${appSettings.subtitleSettings.position === "bottom" ? "80" : "720"}px`,
-                left: `${appSettings.subtitleSettings.size === "20" ? "350" : appSettings.subtitleSettings.size === "30" ? "250" : "150" }px`,
+                left: `${appSettings.subtitleSettings.size === "20" ? "350" : appSettings.subtitleSettings.size === "30" ? "250" : "200" }px`,
                 padding: '8px 16px'
               }}
             >
