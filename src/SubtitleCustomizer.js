@@ -9,7 +9,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Tooltip from '@mui/material/Tooltip';
 import PropTypes from 'prop-types';
-import Switch  from "@mui/material/Switch";
+import Switch from "@mui/material/Switch";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -101,6 +101,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
   const handleProfileChange = (newProfileId) => {
     updateAppSettingsForSubtitles({
       currentProfile: newProfileId,
+      profileName: appSettings.subtitleSettings.profiles.get(newProfileId).profileName,
       font: appSettings.subtitleSettings.profiles.get(newProfileId).font,
       size: appSettings.subtitleSettings.profiles.get(newProfileId).size,
       color: appSettings.subtitleSettings.profiles.get(newProfileId).color,
@@ -113,24 +114,43 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
   };
 
   const handleSaveProfile = () => {
-    const newCurrentProfile = appSettings.subtitleSettings.profileName
-    const newProfileId = appSettings.subtitleSettings.profiles.size
-    updateAppSettingsForSubtitles({
-      currentProfile: newProfileId,
-      profileName: '',
-      profiles: new Map([...appSettings.subtitleSettings.profiles, [
-        newProfileId, {
-          profileName: newCurrentProfile,
-          font: appSettings.subtitleSettings.font,
-          size: appSettings.subtitleSettings.size,
-          color: appSettings.subtitleSettings.color,
-          backgroundHex: appSettings.subtitleSettings.backgroundHex,
-          opacity: appSettings.subtitleSettings.opacity,
-          lineSpacing: appSettings.subtitleSettings.lineSpacing,
-          position: appSettings.subtitleSettings.position,
-        }
-      ]])
-    })
+    const profileName = appSettings.subtitleSettings.profileName
+    const existingProfile = appSettings.subtitleSettings.profiles.entries().find(([key,value]) => value.profileName === profileName)
+
+    if(existingProfile) {
+      const existingProfileId = existingProfile[0]
+      updateAppSettingsForSubtitles({
+        profiles: new Map([...appSettings.subtitleSettings.profiles.entries().filter(([key, value]) => key !== existingProfileId), [
+          existingProfileId, {
+            profileName: profileName,
+            font: appSettings.subtitleSettings.font,
+            size: appSettings.subtitleSettings.size,
+            color: appSettings.subtitleSettings.color,
+            backgroundHex: appSettings.subtitleSettings.backgroundHex,
+            opacity: appSettings.subtitleSettings.opacity,
+            lineSpacing: appSettings.subtitleSettings.lineSpacing,
+            position: appSettings.subtitleSettings.position,
+          }
+        ]])
+      })
+    } else {
+      const newProfileId = appSettings.subtitleSettings.profiles.size
+      updateAppSettingsForSubtitles({
+        currentProfile: newProfileId,
+        profiles: new Map([...appSettings.subtitleSettings.profiles, [
+          newProfileId, {
+            profileName: profileName,
+            font: appSettings.subtitleSettings.font,
+            size: appSettings.subtitleSettings.size,
+            color: appSettings.subtitleSettings.color,
+            backgroundHex: appSettings.subtitleSettings.backgroundHex,
+            opacity: appSettings.subtitleSettings.opacity,
+            lineSpacing: appSettings.subtitleSettings.lineSpacing,
+            position: appSettings.subtitleSettings.position,
+          }
+        ]])
+      })
+    }
   }
 
   const handleDeleteProfile = (profileId) => {
@@ -141,6 +161,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
 
     updateAppSettingsForSubtitles({
       currentProfile: newCurrentProfile,
+      profileName: appSettings.subtitleSettings.profiles.get(newCurrentProfile).profileName,
       profiles: new Map([...appSettings.subtitleSettings.profiles.entries().filter(([key, value]) => key !== profileId)]),
       font: appSettings.subtitleSettings.profiles.get(newCurrentProfile).font,
       size: appSettings.subtitleSettings.profiles.get(newCurrentProfile).size,
@@ -187,21 +208,66 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
       }}>
         <div style={{ display: 'inline-block' }}>
           <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, textAlign: 'center', display: 'block' }}>
-          {appSettings.subtitleSettings.language === "english" ? "This is a preview of subtitles" : "Esta es una vista previa de los subtítulos" }
+            {appSettings.subtitleSettings.language === "english" ? "This is a preview of subtitles" : "Esta es una vista previa de los subtítulos"}
           </div>
           <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, textAlign: 'center', display: 'block' }}>
-          {appSettings.subtitleSettings.language === "english" ? "This is another line showing preview of subtitles" : " Esta es otra línea que muestra una vista previa de los subtítulos" }
+            {appSettings.subtitleSettings.language === "english" ? "This is another line showing preview of subtitles" : " Esta es otra línea que muestra una vista previa de los subtítulos"}
           </div>
         </div>
       </div>
 
-      <Stack direction="row" sx={{ bgcolor: 'rgba(0,0,0,0.8)', padding: '20px', borderRadius: '15px', width: '500px' }} spacing={1}>
+      <Stack direction="row" sx={{ bgcolor: 'rgba(0,0,0,0.8)', padding: '20px', borderRadius: '15px', width: '800px' }} spacing={1}>
 
-        <Stack sx={{ padding: '10px', borderRight: 1, borderColor: 'gray' }} spacing={2}>
+        <Stack sx={{ padding: '10px', borderRight: 1, borderColor: 'gray', width: '200px' }} spacing={2}>
+          <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
+            <strong>Subtitles</strong>
+          </Typography>
+          <Box >
+            <FormControl sx={{ color: 'text.primary' }}>
+              <RadioGroup
+                value={appSettings.subtitleSettings.switch}
+                onChange={handleSwitchChange}
+                size="small"
+              >
+                <FormControlLabel value="off" control={<Radio />} label="Off" />
+                <FormControlLabel value="on" control={<Radio />} label="On" />
+              </RadioGroup>
+            </FormControl>
+          </Box>
 
           <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
-            <strong>Subtitle Settings</strong>
+            <strong>Languages</strong>
           </Typography>
+          <Box >
+            <FormControl sx={{ color: 'text.primary' }}>
+              <RadioGroup
+                value={appSettings.subtitleSettings.language}
+                onChange={handleLanguageChange}
+                size="small"
+              >
+                <FormControlLabel value="english" control={<Radio />} label="English" />
+                <FormControlLabel value="spanish" control={<Radio />} label="Spanish" />
+              </RadioGroup>
+            </FormControl>
+          </Box>
+
+        </Stack>
+
+        <Stack sx={{ padding: '10px', borderRight: 1, borderColor: 'gray', width: '300px' }} spacing={2}>
+
+          <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
+            <strong>Profile Settings</strong>
+          </Typography>
+
+          <TextField
+            label="Profile Name"
+            variant="outlined"
+            fullWidth
+            value={appSettings.subtitleSettings.profileName}
+            sx={{ my: 2}}
+            onChange={handleProfileNameChange}
+            size="small"
+          />
 
           <FormControl>
             <InputLabel id="font-label">Font</InputLabel>
@@ -322,19 +388,11 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
             </Select>
           </FormControl>
 
-          <TextField
-            label="Profile Name"
-            variant="outlined"
-            fullWidth
-            value={appSettings.subtitleSettings.profileName}
-            sx={{ my: 2 }}
-            onChange={handleProfileNameChange}
-            size="small"
-          />
           <Button
             variant="contained"
             onClick={handleSaveProfile}
             size="small"
+            disabled={appSettings.subtitleSettings.profileName === "Default"}
           >
             Save
           </Button>
@@ -363,39 +421,6 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
               </ListItem>
             ))}
           </List>
-
-          <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
-            <strong>Languages</strong>
-          </Typography>
-          <Box >
-            <FormControl sx={{ color: 'text.primary' }}>
-              <RadioGroup
-                value={appSettings.subtitleSettings.language}
-                onChange={handleLanguageChange}
-                size="small"
-              >
-                <FormControlLabel value="english" control={<Radio />} label="English" />
-                <FormControlLabel value="spanish" control={<Radio />} label="Spanish" />
-              </RadioGroup>
-            </FormControl>
-          </Box>
-
-          <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
-            <strong>Switch On/Off</strong>
-          </Typography>
-          <Box >
-
-            <FormControl sx={{ color: 'text.primary' }}>
-              <RadioGroup
-                value={appSettings.subtitleSettings.switch}
-                onChange={handleSwitchChange}
-                size="small"
-              >
-                <FormControlLabel value="off" control={<Radio />} label="Off" />
-                <FormControlLabel value="on" control={<Radio />} label="On" />
-              </RadioGroup>
-            </FormControl>
-          </Box>
         </Stack>
       </Stack>
     </div>

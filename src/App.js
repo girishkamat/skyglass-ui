@@ -75,7 +75,7 @@ export default function App() {
       textShadow: false,
       position: "bottom",
       currentProfile: 0,
-      profileName: '',
+      profileName: 'Default',
 
       profiles: new Map([[0, {
         profileName: 'Default',
