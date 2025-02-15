@@ -256,7 +256,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
           <FormControlLabel
             sx={{ color: 'text.primary' }}
             control={<Switch checked={appSettings.subtitleSettings.textShadow} onChange={(e) => handleTextShadowSwitch(e.target.checked)} />}
-            label="Shadow"
+            label="Font Shadow"
             labelPlacement="start"
           />
 
