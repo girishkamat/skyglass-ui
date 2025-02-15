@@ -9,7 +9,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Tooltip from '@mui/material/Tooltip';
 import PropTypes from 'prop-types';
-
+import Switch  from "@mui/material/Switch";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -76,7 +76,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
   function handleOpacity(newValue) {
     updateAppSettingsForSubtitles({
       opacity: newValue,
-      background: appSettings.subtitleSettings.background === "transperant" ? appSettings.subtitleSettings.background : hexToRgb(appSettings.subtitleSettings.backgroundHex, newValue / 100)
+      background: hexToRgb(appSettings.subtitleSettings.backgroundHex, newValue / 100)
     })
   }
 
@@ -116,7 +116,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
     const newCurrentProfile = appSettings.subtitleSettings.profileName
     const newProfileId = appSettings.subtitleSettings.profiles.size
     updateAppSettingsForSubtitles({
-      currentProfile: newProfileId, 
+      currentProfile: newProfileId,
       profileName: '',
       profiles: new Map([...appSettings.subtitleSettings.profiles, [
         newProfileId, {
@@ -135,7 +135,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
 
   const handleDeleteProfile = (profileId) => {
     var newCurrentProfile = appSettings.subtitleSettings.currentProfile
-    if(appSettings.subtitleSettings.currentProfile === profileId) {
+    if (appSettings.subtitleSettings.currentProfile === profileId) {
       newCurrentProfile = 0
     }
 
@@ -169,7 +169,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
 
   const handleLineSpacingChange = (e) => updateAppSettingsForSubtitles({ lineSpacing: e.target.value })
 
-
+  const handleTextShadowSwitch = (switchState) => updateAppSettingsForSubtitles({ textShadow: switchState })
 
   return (
     <div style={{
@@ -177,34 +177,27 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
       placeItems: 'center'
     }}>
       <div style={{
-        padding: '10px',
-        marginBottom: '10px',
+        padding: '5px',
+        marginBottom: '5px',
         fontFamily: appSettings.subtitleSettings.font,
         fontSize: `${appSettings.subtitleSettings.size}px`,
         color: appSettings.subtitleSettings.color,
-        backgroundColor: appSettings.subtitleSettings.background
+        backgroundColor: appSettings.subtitleSettings.background,
+        textShadow: `${appSettings.subtitleSettings.textShadow ? '4px 4px 10px rgba(0, 0, 0, 1)' : 'unset'}`
       }}>
         {appSettings.subtitleSettings.language === "english" ? <div style={{ display: 'inline-block' }}>
           <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, textAlign: 'center', display: 'block' }}>
-            This is a preview of subtitles
+          {appSettings.subtitleSettings.language === "english" ? "This is a preview of subtitles" : "Esta es una vista previa de los subtítulos" }
           </div>
           <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, textAlign: 'center', display: 'block' }}>
-            This is another line showing preview of subtitles
-          </div>
-        </div> : ""}
-        {appSettings.subtitleSettings.language === "spanish" ? <div>
-          <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, textAlign: 'center', display: 'block' }}>
-            Esta es una vista previa de los subtítulos.
-          </div>
-          <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, textAlign: 'center', display: 'block' }}>
-            Esta es otra línea que muestra una vista previa de los subtítulos.
+          {appSettings.subtitleSettings.language === "english" ? "This is another line showing preview of subtitles" : " Esta es otra línea que muestra una vista previa de los subtítulos" }
           </div>
         </div> : ""}
       </div>
 
-      <Stack direction="row" sx={{ bgcolor: 'rgba(0,0,0,0.8)', padding: '20px', borderRadius: '15px', width: '500px'}} spacing={1}>
+      <Stack direction="row" sx={{ bgcolor: 'rgba(0,0,0,0.8)', padding: '20px', borderRadius: '15px', width: '500px' }} spacing={1}>
 
-        <Stack sx={{ padding: '20px', borderRight: 1, borderColor: 'gray' }} spacing={2}>
+        <Stack sx={{ padding: '10px', borderRight: 1, borderColor: 'gray' }} spacing={2}>
 
           <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
             <strong>Subtitle Settings</strong>
@@ -260,6 +253,13 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
             </Select>
           </FormControl>
 
+          <FormControlLabel
+            sx={{ color: 'text.primary' }}
+            control={<Switch checked={appSettings.subtitleSettings.textShadow} onChange={(e) => handleTextShadowSwitch(e.target.checked)} />}
+            label="Shadow"
+            labelPlacement="start"
+          />
+
           <FormControl>
             <InputLabel id="fontBackground-label">Background</InputLabel>
             <Select
@@ -278,7 +278,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
 
           <FormControl>
             <Typography id="input-slider" gutterBottom sx={{ color: 'text.primary' }}>
-              Opacity
+              Background Opacity
             </Typography>
             <Slider
               aria-labelledby="opacity-slider"
@@ -306,8 +306,6 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
               ))}
             </Select>
           </FormControl>
-
-         
 
           <FormControl>
             <InputLabel id="position-label">Position</InputLabel>
@@ -350,8 +348,8 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
           <List dense={true} sx={{ color: 'text.primary' }}>
             {Array.from(appSettings.subtitleSettings.profiles).map(([profileId, profile]) => (
               <ListItem disableGutters key={profileId}
-                secondaryAction=  {profileId !== 0 ? <IconButton edge="end" onClick={() => handleDeleteProfile(profileId)}>
-                  <DeleteIcon key={profileId}/>
+                secondaryAction={profileId !== 0 ? <IconButton edge="end" onClick={() => handleDeleteProfile(profileId)}>
+                  <DeleteIcon key={profileId} />
                 </IconButton> : ""}
 
               >
@@ -360,7 +358,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
                   selected={appSettings.subtitleSettings.currentProfile === profileId}
                   onClick={() => handleProfileChange(profileId)}
                 >
-                  <ListItemText primary={profile.profileName} sx={{paddingLeft: '10px'}}/>
+                  <ListItemText primary={profile.profileName} sx={{ paddingLeft: '10px' }} />
                 </ListItemButton>
               </ListItem>
             ))}

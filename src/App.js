@@ -66,12 +66,13 @@ export default function App() {
       language: 'english',
 
       font: "Arial, sans-serif",
-      size: 20,
+      size: "20",
       color: "#FFFFFF",
       background: "transperant",
       backgroundHex: "transperant",
       opacity: 0,
       lineSpacing: 1.2,
+      textShadow: false,
       position: "bottom",
       currentProfile: 0,
       profileName: '',
@@ -84,6 +85,7 @@ export default function App() {
         backgroundHex: "transperant",
         opacity: 0,
         lineSpacing: 1.2,
+        textShadow: false,
         position: "bottom"
       }]]),
       fonts: fonts,
@@ -109,7 +111,6 @@ export default function App() {
     var offset = remoteImg.current.getBoundingClientRect();
     var x = Math.floor((e.pageX - offset.left) / offset.width * 10000) / 100;
     var y = Math.floor((e.pageY - offset.top) / offset.height * 10000) / 100;
-    console.log(x + "," + y)
     const newAppSettings = {}
     if (x > 15 && x < 34 && y > 30 && y < 40) {
       // subtitles button
@@ -143,24 +144,20 @@ export default function App() {
     return (
       <div style={{ display: 'inline-block' }}>
         <div style={{
-          padding: '5px',
-          lineHeight: appSettings.subtitleSettings.lineSpacing, textAlign: 'center', display: 'block', position: 'relative',
+          marginBottom: '10px',
           fontFamily: appSettings.subtitleSettings.font,
           fontSize: `${appSettings.subtitleSettings.size}px`,
           color: appSettings.subtitleSettings.color,
-          backgroundColor: appSettings.subtitleSettings.background
+          textShadow: `${appSettings.subtitleSettings.textShadow ? '4px 4px 10px rgba(0, 0, 0, 1)' : 'unset'}`
         }}>
-          {language === "english" ? "This is a preview of subtitles" : "Esta es una vista previa de los subtítulos"}
-        </div>
-        <div style={{
-          padding: '5px',
-          lineHeight: appSettings.subtitleSettings.lineSpacing, textAlign: 'center', display: 'block', position: 'relative',
-          fontFamily: appSettings.subtitleSettings.font,
-          fontSize: `${appSettings.subtitleSettings.size}px`,
-          color: appSettings.subtitleSettings.color,
-          backgroundColor: appSettings.subtitleSettings.background
-        }}>
-          {language === "english" ? "This is another line showing preview of subtitles" : "Esta es otra línea que muestra una vista previa de los subtítulos"}
+          {appSettings.subtitleSettings.language === "english" ? <div>
+            <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, paddingLeft: '5px', paddingRight: '5px', textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background }}>
+              {appSettings.subtitleSettings.language === "english" ? "This is a preview of subtitles" : "Esta es una vista previa de los subtítulos"}
+            </div>
+            <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, paddingLeft: '5px', paddingRight: '5px', textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background }}>
+              {appSettings.subtitleSettings.language === "english" ? "This is another line showing preview of subtitles" : " Esta es otra línea que muestra una vista previa de los subtítulos"}
+            </div>
+          </div> : ""}
         </div>
       </div>
     )
@@ -201,17 +198,15 @@ export default function App() {
           </ThemeProvider>
         </Box>
         {appSettings.subtitleSettings.switch === "on" && appSettings.visibleBottomNav === false ?
-          <div
-            style={{ width: '1100px', display: 'grid', }}
-          ><div
-            style={{
-              position: 'absolute',
-              bottom: `${appSettings.subtitleSettings.position === "bottom" ? "80" : "700"}px`,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              padding: '8px 16px'
-            }}
-          >
+          <div>
+            <div
+              style={{
+                position: 'absolute',
+                bottom: `${appSettings.subtitleSettings.position === "bottom" ? "80" : "720"}px`,
+                left: `${appSettings.subtitleSettings.size === "20" ? "350" : appSettings.subtitleSettings.size === "30" ? "250" : "150" }px`,
+                padding: '8px 16px'
+              }}
+            >
               {subtitleComponent(appSettings.subtitleSettings.language)}
             </div></div> : ""}
       </div>
