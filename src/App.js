@@ -41,7 +41,7 @@ export default function App() {
   ];
 
   const sizes = new Map([
-    ["20", "Small"], ["30", "Medium"], ["40", "Large"]
+    [20, "Small"], [30, "Medium"], [40, "Large"]
   ])
 
   const colors = new Map([
@@ -66,7 +66,7 @@ export default function App() {
       language: 'english',
 
       font: "Arial, sans-serif",
-      size: "20",
+      size: 20,
       color: "#FFFFFF",
       background: "transperant",
       backgroundHex: "transperant",
