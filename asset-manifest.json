@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/skyglass-ui/static/css/main.662ed938.css",
+    "main.js": "/skyglass-ui/static/js/main.a7a31680.js",
+    "index.html": "/skyglass-ui/index.html",
+    "main.662ed938.css.map": "/skyglass-ui/static/css/main.662ed938.css.map",
+    "main.a7a31680.js.map": "/skyglass-ui/static/js/main.a7a31680.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.662ed938.css",
+    "static/js/main.a7a31680.js"
+  ]
+}
