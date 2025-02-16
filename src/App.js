@@ -37,63 +37,104 @@ export default function App() {
     "Lato, sans-serif",
     "Times New Roman, serif",
     "Georgia, serif",
-    "Courier New, monspace"
+    "Courier New, monspace",
+    "Dyslexie, Arial, sans-serif"
   ];
 
   const sizes = new Map([
-    [20, "Small"], [30, "Medium"], [40, "Large"]
+    [20, "Small"], [30, "Medium"], [40, "Large"], [50, "Extra Large"]
   ])
 
   const colors = new Map([
-    ["#FFFFFF", "White"], ["#FFFF00", "Yellow"], ["#CCCCCC", "Light Gray"], ["#00FFFF", "Cyan"], ["#FFA500", "Orange"], ["#FF0000", "Red"]
+    ["#000000", "Black"], ["#FFFFFF", "White"], ["#FFFF00", "Yellow"], ["#CCCCCC", "Light Gray"], ["#FFFDD0", "Cream"], ["#B3EBF2", "Pastel Blue"], ["#0000FF", "Blue"], ["#A9A9A9", "Dark Gray"]
   ])
 
   const backgrounds = new Map([
-    ["transperant", "Transperant"], ["#FFFFFF", "White"], ["#FFFF00", "Yellow"], ["#CCCCCC", "Light Gray"], ["#00FFFF", "Cyan"], ["#FFA500", "Orange"], ["#FF0000", "Red"]
+    ["#FFFFFF", "White"], ["#000000", "Black"], ["#FFFF00", "Yellow"], ["#CCCCCC", "Light Gray"], ["#FFFDD0", "Cream"], ["#B3EBF2", "Pastel Blue"], ["#0000FF", "Blue"], ["#A9A9A9", "Dark Gray"]
   ])
 
   const lineSpacings = new Map([
     ["1.2", "Low"], ["1.4", "Medium"], ["1.6", "High"]
   ])
 
+  const defaultProfiles = [{
+    profileId: 0,
+    profileName: 'Default',
+    preset: true,
+    font: "Arial, sans-serif",
+    size: 20,
+    color: "#FFFFFF",
+    backgroundHex: "#000000",
+    opacity: 100,
+    lineSpacing: 1.2,
+    position: "bottom"
+  },
+  {
+    profileId: 1,
+    profileName: 'Easy Read',
+    preset: true,
+    font: "Dyslexie, Arial, sans-serif",
+    size: 30,
+    color: "#000000",
+    backgroundHex: "#FFFDD0",
+    opacity: 100,
+    lineSpacing: 1.6,
+    position: "bottom"
+  },
+  {
+    profileId: 2,
+    profileName: 'High Contrast',
+    preset: true,
+    font: "Arial, sans-serif",
+    size: 20,
+    color: "#FFFFFF",
+    backgroundHex: "#000000",
+    opacity: 100,
+    lineSpacing: 1.2,
+    position: "bottom"
+  },
+  {
+    profileId: 3,
+    profileName: 'Low Distraction',
+    preset: true,
+    font: "Arial, sans-serif",
+    size: 30,
+    color: "#B3EBF2",
+    backgroundHex: "#000000",
+    opacity: 100,
+    lineSpacing: 1.4,
+    position: "bottom"
+  },
+  {
+    profileId: 4,
+    profileName: 'Ultra Visible',
+    preset: true,
+    font: "Arial, sans-serif",
+    size: 50,
+    color: "#FFFFFF",
+    backgroundHex: "#000000",
+    opacity: 100,
+    lineSpacing: 1.6,
+    position: "bottom"
+  }
+]
+
+  const subtitleSettings = {
+    switch: 'off',
+    language: 'english',
+    profiles: defaultProfiles,
+    fonts: fonts,
+    sizes: sizes,
+    colors: colors,
+    backgrounds: backgrounds,
+    lineSpacings: lineSpacings
+  }
+
   const [appSettings, setAppSettings] = React.useState({
     visibleBottomNav: false,
     bottomNavTabIndex: 0,
     subtitlePopupAnchorEl: null,
-
-    subtitleSettings: {
-      switch: 'off',
-      language: 'english',
-
-      font: "Arial, sans-serif",
-      size: 20,
-      color: "#FFFFFF",
-      background: "transperant",
-      backgroundHex: "transperant",
-      opacity: 0,
-      lineSpacing: 1.2,
-      textShadow: false,
-      position: "bottom",
-      currentProfile: 0,
-      profileName: 'Default',
-
-      profiles: new Map([[0, {
-        profileName: 'Default',
-        font: "Arial, sans-serif",
-        size: 20,
-        color: "#FFFFFF",
-        backgroundHex: "transperant",
-        opacity: 0,
-        lineSpacing: 1.2,
-        textShadow: false,
-        position: "bottom"
-      }]]),
-      fonts: fonts,
-      sizes: sizes,
-      colors: colors,
-      backgrounds: backgrounds,
-      lineSpacings: lineSpacings
-    }
+    subtitleSettings: {...subtitleSettings, ...defaultProfiles[0]}
   })
 
   const subtitlesPopperOpen = Boolean(appSettings.subtitlePopupAnchorEl);
@@ -111,8 +152,10 @@ export default function App() {
     var offset = remoteImg.current.getBoundingClientRect();
     var x = Math.floor((e.pageX - offset.left) / offset.width * 10000) / 100;
     var y = Math.floor((e.pageY - offset.top) / offset.height * 10000) / 100;
+    console.log(x + "," + y)
     const newAppSettings = {}
-    if (x > 15 && x < 34 && y > 30 && y < 40) {
+
+    if (x > 17 && x < 31 && y > 19 && y < 23) {
       // subtitles button
       newAppSettings.visibleBottomNav = !appSettings.visibleBottomNav
       if (!newAppSettings.visibleBottomNav) {
@@ -120,19 +163,20 @@ export default function App() {
       } else {
         newAppSettings.bottomNavTabIndex = 1
       }
-    } else if (x > 52 && x < 83 && y > 42 && y < 72) {
-      // left button
+    } else if (x > 60 && x < 82 && y > 31 && y < 40) {
+      // right button
       const newBottomNavTabIndex = appSettings.bottomNavTabIndex + 1
       if (newBottomNavTabIndex >= 0 && newBottomNavTabIndex <= 4) {
         newAppSettings.bottomNavTabIndex = newBottomNavTabIndex
       }
-    } else if (x > 17 && x < 52 && y > 42 && y < 72) {
-      // right button
+    } else if (x > 17 && x < 36 && y > 32 && y < 42) {
+      // left button
       const newBottomNavTabIndex = appSettings.bottomNavTabIndex - 1
       if (newBottomNavTabIndex >= 0 && newBottomNavTabIndex <= 4) {
         newAppSettings.bottomNavTabIndex = newBottomNavTabIndex
       }
-    } else if (x > 17 && x < 34 && y > 78 && y < 85) {
+    } else if (x > 17 && x < 31 && y > 50 && y < 54) {
+      // back button
       newAppSettings.visibleBottomNav = false
       newAppSettings.bottomNavTabIndex = 0
     }
@@ -148,7 +192,6 @@ export default function App() {
           fontFamily: appSettings.subtitleSettings.font,
           fontSize: `${appSettings.subtitleSettings.size}px`,
           color: appSettings.subtitleSettings.color,
-          textShadow: `${appSettings.subtitleSettings.textShadow ? '4px 4px 10px rgba(0, 0, 0, 1)' : 'unset'}`
         }}>
           {appSettings.subtitleSettings.language === "english" ? <div>
             <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, paddingLeft: '5px', paddingRight: '5px', textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background }}>
@@ -211,7 +254,7 @@ export default function App() {
             </div></div> : ""}
       </div>
       <div className="remoteContainer">
-        <img onClick={handleRemoteClick} ref={remoteImg} src='/sky-remote.png' className="remoteImage" />
+        <img onClick={handleRemoteClick} ref={remoteImg} src='/sky-remote.jpg' className="remoteImage" />
       </div>
     </div>
   );

@@ -9,7 +9,6 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Tooltip from '@mui/material/Tooltip';
 import PropTypes from 'prop-types';
-import Switch from "@mui/material/Switch";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -34,24 +33,54 @@ ValueLabelComponent.propTypes = {
 
 export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
 
+  function extractRgbFromHex(hex) {
+    hex = hex.replace(/^#/, "");
 
-  function hexToRgb(hex, opacity) {
-    // Remove '#' if present
-    hex = hex.replace(/^#/, '');
-
-    // Parse shorthand hex codes (e.g., #abc -> #aabbcc)
+    // If shorthand notation (e.g., #abc), expand it to full form (#aabbcc)
     if (hex.length === 3) {
       hex = hex.split('').map(char => char + char).join('');
     }
-
     // Convert to RGB values
     const bigint = parseInt(hex, 16);
     const r = (bigint >> 16) & 255;
     const g = (bigint >> 8) & 255;
     const b = bigint & 255;
-
-    return `rgb(${r}, ${g}, ${b}, ${opacity})`;
+    return { red: r, green: g, blue: b };
   }
+
+  function colorWithOpacity(colorHex, opacity) {
+    const rgb = extractRgbFromHex(colorHex)
+    return `rgb(${rgb.red}, ${rgb.green}, ${rgb.blue}, ${opacity})`;
+  }
+
+  // Blend semi-transparent background over white
+  const blendWithWhite = (rgb, alpha) => {
+    const blendedR = Math.round((1 - alpha) * 255 + alpha * rgb.red);
+    const blendedG = Math.round((1 - alpha) * 255 + alpha * rgb.green);
+    const blendedB = Math.round((1 - alpha) * 255 + alpha * rgb.blue);
+    return { red: blendedR, green: blendedG, blue: blendedB };
+  };
+
+  const getLuminance = (rgb) => {
+    const adjust = (c) => (c <= 10 ? c / 3294 : Math.pow((c / 255 + 0.055) / 1.055, 2.4));
+    return 0.2126 * adjust(rgb.red) + 0.7152 * adjust(rgb.green) + 0.0722 * adjust(rgb.blue);
+  };
+
+  const getContrastRatio = (foregroundHex, backgroundHex, backgroundOpacity) => {
+    // Blend background with white
+    const foregroundRgb = extractRgbFromHex(foregroundHex)
+    const backgroundRgb = extractRgbFromHex(backgroundHex)
+
+    const blendedBackgroundRgb = blendWithWhite(backgroundRgb, (backgroundOpacity / 100).toFixed(2));
+
+    // Calculate luminance
+    const lum1 = getLuminance(foregroundRgb);
+    const lum2 = getLuminance(blendedBackgroundRgb);
+
+    const [L1, L2] = lum1 > lum2 ? [lum1, lum2] : [lum2, lum1];
+    return ((L1 + 0.05) / (L2 + 0.05)).toFixed(2);
+  };
+
 
   function updateAppSettingsForSubtitles(updatedSubtitleSettings) {
     setAppSettings({
@@ -67,7 +96,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
 
   function handleBackground(e) {
     updateAppSettingsForSubtitles({
-      background: hexToRgb(e.target.value, appSettings.subtitleSettings.opacity / 100),
+      background: colorWithOpacity(e.target.value, appSettings.subtitleSettings.opacity / 100),
       backgroundHex: e.target.value
     })
   }
@@ -76,7 +105,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
   function handleOpacity(newValue) {
     updateAppSettingsForSubtitles({
       opacity: newValue,
-      background: hexToRgb(appSettings.subtitleSettings.backgroundHex, newValue / 100)
+      background: colorWithOpacity(appSettings.subtitleSettings.backgroundHex, newValue / 100)
     })
   }
 
@@ -99,78 +128,78 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
   };
 
   const handleProfileChange = (newProfileId) => {
+    const profile = appSettings.subtitleSettings.profiles.find((p) => p.profileId == newProfileId)
     updateAppSettingsForSubtitles({
-      currentProfile: newProfileId,
-      profileName: appSettings.subtitleSettings.profiles.get(newProfileId).profileName,
-      font: appSettings.subtitleSettings.profiles.get(newProfileId).font,
-      size: appSettings.subtitleSettings.profiles.get(newProfileId).size,
-      color: appSettings.subtitleSettings.profiles.get(newProfileId).color,
-      background: hexToRgb(appSettings.subtitleSettings.profiles.get(newProfileId).backgroundHex, appSettings.subtitleSettings.profiles.get(newProfileId).opacity / 100),
-      backgroundHex: appSettings.subtitleSettings.profiles.get(newProfileId).backgroundHex,
-      opacity: appSettings.subtitleSettings.profiles.get(newProfileId).opacity,
-      lineSpacing: appSettings.subtitleSettings.profiles.get(newProfileId).lineSpacing,
-      position: appSettings.subtitleSettings.profiles.get(newProfileId).position
+      profileId: newProfileId,
+      profileName: profile.profileName,
+      font: profile.font,
+      size: profile.size,
+      color: profile.color,
+      background: colorWithOpacity(profile.backgroundHex, profile.opacity / 100),
+      backgroundHex: profile.backgroundHex,
+      opacity: profile.opacity,
+      lineSpacing: profile.lineSpacing,
+      position: profile.position
     })
   };
 
   const handleSaveProfile = () => {
-    const profileName = appSettings.subtitleSettings.profileName
-    const existingProfile = appSettings.subtitleSettings.profiles.entries().find(([key,value]) => value.profileName === profileName)
+    const existingProfile = appSettings.subtitleSettings.profiles.find((profile) => profile.profileName === appSettings.subtitleSettings.profileName)
 
-    if(existingProfile) {
-      const existingProfileId = existingProfile[0]
+    if (existingProfile) {
+      const existingProfileId = existingProfile.profileId
       updateAppSettingsForSubtitles({
-        profiles: new Map([...appSettings.subtitleSettings.profiles.entries().filter(([key, value]) => key !== existingProfileId), [
-          existingProfileId, {
-            profileName: profileName,
-            font: appSettings.subtitleSettings.font,
-            size: appSettings.subtitleSettings.size,
-            color: appSettings.subtitleSettings.color,
-            backgroundHex: appSettings.subtitleSettings.backgroundHex,
-            opacity: appSettings.subtitleSettings.opacity,
-            lineSpacing: appSettings.subtitleSettings.lineSpacing,
-            position: appSettings.subtitleSettings.position,
-          }
-        ]])
+        profiles: [...appSettings.subtitleSettings.profiles.filter((profile) => profile.profileId !== existingProfileId),
+        ...[{
+          profileId: existingProfileId,
+          profileName: appSettings.subtitleSettings.profileName,
+          font: appSettings.subtitleSettings.font,
+          size: appSettings.subtitleSettings.size,
+          color: appSettings.subtitleSettings.color,
+          backgroundHex: appSettings.subtitleSettings.backgroundHex,
+          opacity: appSettings.subtitleSettings.opacity,
+          lineSpacing: appSettings.subtitleSettings.lineSpacing,
+          position: appSettings.subtitleSettings.position,
+        }]]
       })
     } else {
-      const newProfileId = appSettings.subtitleSettings.profiles.size
+      const newProfileId = Math.max(...appSettings.subtitleSettings.profiles.map((p) => p.profileId)) + 1
       updateAppSettingsForSubtitles({
-        currentProfile: newProfileId,
-        profiles: new Map([...appSettings.subtitleSettings.profiles, [
-          newProfileId, {
-            profileName: profileName,
-            font: appSettings.subtitleSettings.font,
-            size: appSettings.subtitleSettings.size,
-            color: appSettings.subtitleSettings.color,
-            backgroundHex: appSettings.subtitleSettings.backgroundHex,
-            opacity: appSettings.subtitleSettings.opacity,
-            lineSpacing: appSettings.subtitleSettings.lineSpacing,
-            position: appSettings.subtitleSettings.position,
-          }
-        ]])
+        profileId: newProfileId,
+        profiles: [...appSettings.subtitleSettings.profiles, ...[{
+          profileId: newProfileId,
+          profileName: appSettings.subtitleSettings.profileName,
+          font: appSettings.subtitleSettings.font,
+          size: appSettings.subtitleSettings.size,
+          color: appSettings.subtitleSettings.color,
+          backgroundHex: appSettings.subtitleSettings.backgroundHex,
+          opacity: appSettings.subtitleSettings.opacity,
+          lineSpacing: appSettings.subtitleSettings.lineSpacing,
+          position: appSettings.subtitleSettings.position,
+        }]]
       })
     }
   }
 
   const handleDeleteProfile = (profileId) => {
-    var newCurrentProfile = appSettings.subtitleSettings.currentProfile
-    if (appSettings.subtitleSettings.currentProfile === profileId) {
-      newCurrentProfile = 0
+    var newProfileId = appSettings.subtitleSettings.profileId
+    if (newProfileId === profileId) {
+      newProfileId = 0
     }
+    const profile = appSettings.subtitleSettings.profiles.find((p) => p.profileId == newProfileId)
 
     updateAppSettingsForSubtitles({
-      currentProfile: newCurrentProfile,
-      profileName: appSettings.subtitleSettings.profiles.get(newCurrentProfile).profileName,
-      profiles: new Map([...appSettings.subtitleSettings.profiles.entries().filter(([key, value]) => key !== profileId)]),
-      font: appSettings.subtitleSettings.profiles.get(newCurrentProfile).font,
-      size: appSettings.subtitleSettings.profiles.get(newCurrentProfile).size,
-      color: appSettings.subtitleSettings.profiles.get(newCurrentProfile).color,
-      background: hexToRgb(appSettings.subtitleSettings.profiles.get(newCurrentProfile).backgroundHex, appSettings.subtitleSettings.profiles.get(newCurrentProfile).opacity / 100),
-      backgroundHex: appSettings.subtitleSettings.profiles.get(newCurrentProfile).backgroundHex,
-      opacity: appSettings.subtitleSettings.profiles.get(newCurrentProfile).opacity,
-      lineSpacing: appSettings.subtitleSettings.profiles.get(newCurrentProfile).lineSpacing,
-      position: appSettings.subtitleSettings.profiles.get(newCurrentProfile).position
+      profileId: newProfileId,
+      profileName: profile.profileName,
+      profiles: [...appSettings.subtitleSettings.profiles.filter((profile) => profile.profileId !== profileId)],
+      font: profile.font,
+      size: profile.size,
+      color: profile.color,
+      background: colorWithOpacity(profile.backgroundHex, profile.opacity / 100),
+      backgroundHex: profile.backgroundHex,
+      opacity: profile.opacity,
+      lineSpacing: profile.lineSpacing,
+      position: profile.position
     })
   }
 
@@ -190,8 +219,6 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
 
   const handleLineSpacingChange = (e) => updateAppSettingsForSubtitles({ lineSpacing: e.target.value })
 
-  const handleTextShadowSwitch = (switchState) => updateAppSettingsForSubtitles({ textShadow: switchState })
-
   return (
     <div style={{
       width: '1200px', display: 'grid',
@@ -203,14 +230,12 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
         fontFamily: appSettings.subtitleSettings.font,
         fontSize: `${appSettings.subtitleSettings.size}px`,
         color: appSettings.subtitleSettings.color,
-        backgroundColor: appSettings.subtitleSettings.background,
-        textShadow: `${appSettings.subtitleSettings.textShadow ? '4px 4px 10px rgba(0, 0, 0, 1)' : 'unset'}`
       }}>
         <div style={{ display: 'inline-block' }}>
-          <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, textAlign: 'center', display: 'block' }}>
+          <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, textAlign: 'center', display: 'block', backgroundColor: appSettings.subtitleSettings.background }}>
             {appSettings.subtitleSettings.language === "english" ? "This is a preview of subtitles" : "Esta es una vista previa de los subtítulos"}
           </div>
-          <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, textAlign: 'center', display: 'block' }}>
+          <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, textAlign: 'center', display: 'block', backgroundColor: appSettings.subtitleSettings.background }}>
             {appSettings.subtitleSettings.language === "english" ? "This is another line showing preview of subtitles" : " Esta es otra línea que muestra una vista previa de los subtítulos"}
           </div>
         </div>
@@ -253,7 +278,31 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
 
         </Stack>
 
-        <Stack sx={{ padding: '10px', borderRight: 1, borderColor: 'gray', width: '300px' }} spacing={2}>
+        <Stack sx={{ padding: '20px', borderRight: 1, borderColor: 'gray' }}>
+          <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
+            <strong>Profiles</strong>
+          </Typography>
+
+          <List dense={true} sx={{ color: 'text.primary' }}>
+            {appSettings.subtitleSettings.profiles.map((profile) => (
+              <ListItem disableGutters key={profile.profileId}
+                secondaryAction={!profile.preset ? <IconButton edge="end" onClick={() => handleDeleteProfile(profile.profileId)}>
+                  <DeleteIcon key={profile.profileId} />
+                </IconButton> : ""}
+              >
+                <ListItemButton
+                  disableGutters
+                  selected={appSettings.subtitleSettings.profileId === profile.profileId}
+                  onClick={() => handleProfileChange(profile.profileId)}
+                >
+                  <ListItemText primary={profile.profileName} sx={{ paddingLeft: '10px' }} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Stack>
+
+        <Stack sx={{ padding: '10px', width: '300px' }} spacing={2}>
 
           <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
             <strong>Profile Settings</strong>
@@ -264,7 +313,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
             variant="outlined"
             fullWidth
             value={appSettings.subtitleSettings.profileName}
-            sx={{ my: 2}}
+            sx={{ my: 2 }}
             onChange={handleProfileNameChange}
             size="small"
           />
@@ -318,13 +367,6 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
               ))}
             </Select>
           </FormControl>
-
-          <FormControlLabel
-            sx={{ color: 'text.primary' }}
-            control={<Switch checked={appSettings.subtitleSettings.textShadow} onChange={(e) => handleTextShadowSwitch(e.target.checked)} />}
-            label="Font Shadow"
-            labelPlacement="start"
-          />
 
           <FormControl>
             <InputLabel id="fontBackground-label">Background</InputLabel>
@@ -392,35 +434,10 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
             variant="contained"
             onClick={handleSaveProfile}
             size="small"
-            disabled={appSettings.subtitleSettings.profileName === "Default"}
+            disabled={appSettings.subtitleSettings.profiles.filter((p) => p.preset).map((p) => p.profileName).includes(appSettings.subtitleSettings.profileName)}
           >
             Save
           </Button>
-        </Stack>
-
-        <Stack sx={{ padding: '20px' }}>
-          <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
-            <strong>Profiles</strong>
-          </Typography>
-
-          <List dense={true} sx={{ color: 'text.primary' }}>
-            {Array.from(appSettings.subtitleSettings.profiles).map(([profileId, profile]) => (
-              <ListItem disableGutters key={profileId}
-                secondaryAction={profileId !== 0 ? <IconButton edge="end" onClick={() => handleDeleteProfile(profileId)}>
-                  <DeleteIcon key={profileId} />
-                </IconButton> : ""}
-
-              >
-                <ListItemButton
-                  disableGutters
-                  selected={appSettings.subtitleSettings.currentProfile === profileId}
-                  onClick={() => handleProfileChange(profileId)}
-                >
-                  <ListItemText primary={profile.profileName} sx={{ paddingLeft: '10px' }} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
         </Stack>
       </Stack>
     </div>

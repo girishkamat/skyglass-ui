@@ -7,12 +7,11 @@
 
 .remoteContainer {
   display:block;
-  padding: 100px;
+  padding: 50px;
 }
 
 .remoteImage {
   width: 250px;
-  height: 600px;
   bottom:0;
 }
 
