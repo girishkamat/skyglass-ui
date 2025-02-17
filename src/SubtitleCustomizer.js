@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Tooltip from '@mui/material/Tooltip';
+import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import PropTypes from 'prop-types';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -15,23 +15,29 @@ import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ListItemButton from '@mui/material/ListItemButton';
-
-function ValueLabelComponent(props) {
-  const { children, value } = props;
-
-  return (
-    <Tooltip enterTouchDelay={0} placement="top" title={value}>
-      {children}
-    </Tooltip>
-  );
-}
-
-ValueLabelComponent.propTypes = {
-  children: PropTypes.element.isRequired,
-  value: PropTypes.node,
-};
+import Edit from "@mui/icons-material/Edit";
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import { Table, TableBody, TableCell, TableContainer, TableRow, Paper } from "@mui/material";
 
 export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
+
+
+  const [profileData, setProfileData] = React.useState({})
+  const [editMode, setEditMode] = React.useState(false)
+
+  function ValueLabelComponent(props) {
+    const { children, value } = props;
+    return (
+      <Tooltip enterTouchDelay={0} placement="top" title={value}>
+        {children}
+      </Tooltip>
+    );
+  }
+
+  ValueLabelComponent.propTypes = {
+    children: PropTypes.element.isRequired,
+    value: PropTypes.node,
+  };
 
   function extractRgbFromHex(hex) {
     hex = hex.replace(/^#/, "");
@@ -82,7 +88,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
   };
 
 
-  function updateAppSettingsForSubtitles(updatedSubtitleSettings) {
+  const updateAppSettingsForSubtitles = (updatedSubtitleSettings) => {
     setAppSettings({
       ...appSettings,
       ...{
@@ -94,38 +100,13 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
     })
   }
 
-  function handleBackground(e) {
-    updateAppSettingsForSubtitles({
-      background: colorWithOpacity(e.target.value, appSettings.subtitleSettings.opacity / 100),
-      backgroundHex: e.target.value
-    })
-  }
-
-
-  function handleOpacity(newValue) {
-    updateAppSettingsForSubtitles({
-      opacity: newValue,
-      background: colorWithOpacity(appSettings.subtitleSettings.backgroundHex, newValue / 100)
-    })
+  const handleSwitchChange = (event) => {
+    updateAppSettingsForSubtitles({ switch: event.target.value })
   }
 
   const handleLanguageChange = (event) => {
-    updateAppSettingsForSubtitles({
-      language: event.target.value
-    })
+    updateAppSettingsForSubtitles({ language: event.target.value })
   }
-
-  const handleProfileNameChange = (event) => {
-    updateAppSettingsForSubtitles({
-      profileName: event.target.value
-    })
-  }
-
-  const handlePosition = (event) => {
-    updateAppSettingsForSubtitles({
-      position: event.target.value
-    })
-  };
 
   const handleProfileChange = (newProfileId) => {
     const profile = appSettings.subtitleSettings.profiles.find((p) => p.profileId == newProfileId)
@@ -135,113 +116,161 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
       font: profile.font,
       size: profile.size,
       color: profile.color,
-      background: colorWithOpacity(profile.backgroundHex, profile.opacity / 100),
+      background: colorWithOpacity(profile.backgroundHex, profile.opacity),
       backgroundHex: profile.backgroundHex,
       opacity: profile.opacity,
       lineSpacing: profile.lineSpacing,
       position: profile.position
     })
-  };
+  }
 
-  const handleSaveProfile = () => {
-    const existingProfile = appSettings.subtitleSettings.profiles.find((profile) => profile.profileName === appSettings.subtitleSettings.profileName)
-
-    if (existingProfile) {
-      const existingProfileId = existingProfile.profileId
-      updateAppSettingsForSubtitles({
-        profiles: [...appSettings.subtitleSettings.profiles.filter((profile) => profile.profileId !== existingProfileId),
-        ...[{
-          profileId: existingProfileId,
-          profileName: appSettings.subtitleSettings.profileName,
-          font: appSettings.subtitleSettings.font,
-          size: appSettings.subtitleSettings.size,
-          color: appSettings.subtitleSettings.color,
-          backgroundHex: appSettings.subtitleSettings.backgroundHex,
-          opacity: appSettings.subtitleSettings.opacity,
-          lineSpacing: appSettings.subtitleSettings.lineSpacing,
-          position: appSettings.subtitleSettings.position,
-        }]]
-      })
+  const handleProfilePreview = (profileId, show) => {
+    if(show) {
+      const profile = appSettings.subtitleSettings.profiles.find((p) => p.profileId == profileId)
+      setProfileData({ ...profile })
     } else {
-      const newProfileId = Math.max(...appSettings.subtitleSettings.profiles.map((p) => p.profileId)) + 1
-      updateAppSettingsForSubtitles({
-        profileId: newProfileId,
-        profiles: [...appSettings.subtitleSettings.profiles, ...[{
-          profileId: newProfileId,
-          profileName: appSettings.subtitleSettings.profileName,
-          font: appSettings.subtitleSettings.font,
-          size: appSettings.subtitleSettings.size,
-          color: appSettings.subtitleSettings.color,
-          backgroundHex: appSettings.subtitleSettings.backgroundHex,
-          opacity: appSettings.subtitleSettings.opacity,
-          lineSpacing: appSettings.subtitleSettings.lineSpacing,
-          position: appSettings.subtitleSettings.position,
-        }]]
-      })
+      setProfileData({})
     }
+  }
+
+  const handleCopyOrEditProfile = (profileId, isCopy) => {
+    const profile = appSettings.subtitleSettings.profiles.find((p) => p.profileId == profileId)
+    setProfileData({
+      ...profile,
+      isCopy: isCopy,
+      profileId: isCopy ? (Math.max(...appSettings.subtitleSettings.profiles.map((p) => p.profileId)) + 1) : profileId,
+      profileName: isCopy ? '' : profile.profileName
+    })
+    setEditMode(true)
   }
 
   const handleDeleteProfile = (profileId) => {
-    var newProfileId = appSettings.subtitleSettings.profileId
-    if (newProfileId === profileId) {
-      newProfileId = 0
+    const currentProfileId = appSettings.subtitleSettings.profileId
+    const updatedProfiles = [...appSettings.subtitleSettings.profiles.filter((profile) => profile.profileId !== profileId)]
+    if (currentProfileId === profileId) {
+      const profile = appSettings.subtitleSettings.profiles[0]
+      updateAppSettingsForSubtitles(
+        {
+          ...profile,
+          profiles: updatedProfiles
+        }
+      )
+    } else {
+      updateAppSettingsForSubtitles({
+        profiles: updatedProfiles
+      })
     }
-    const profile = appSettings.subtitleSettings.profiles.find((p) => p.profileId == newProfileId)
+  }
 
-    updateAppSettingsForSubtitles({
-      profileId: newProfileId,
-      profileName: profile.profileName,
-      profiles: [...appSettings.subtitleSettings.profiles.filter((profile) => profile.profileId !== profileId)],
-      font: profile.font,
-      size: profile.size,
-      color: profile.color,
-      background: colorWithOpacity(profile.backgroundHex, profile.opacity / 100),
-      backgroundHex: profile.backgroundHex,
-      opacity: profile.opacity,
-      lineSpacing: profile.lineSpacing,
-      position: profile.position
+  const handleSaveProfile = (e) => {
+    if (profileData.profileName != "") {
+      const existingProfile = appSettings.subtitleSettings.profiles.find(profile => profile.profileId == profileData.profileId)
+      if (existingProfile) {
+        updateAppSettingsForSubtitles({
+          ...profileData,
+          profiles: [
+            ...appSettings.subtitleSettings.profiles.filter((profile) => profile.profileId !== profileData.profileId), 
+            {...profileData, preset: false}
+          ]
+        })
+      } else {
+        updateAppSettingsForSubtitles({
+          ...profileData,
+          profiles: [
+            ...appSettings.subtitleSettings.profiles, 
+            {...profileData, preset: false}
+          ]
+        })
+      }
+      setProfileData({})
+      setEditMode(false)
+    }
+  }
+
+  const handleCancelEdit = (e) => {
+    setProfileData({})
+    setEditMode(false)
+  }
+
+  const handleProfileNameChange = (e) => {
+    setProfileData({
+      ...profileData,
+      ...{ profileName: e.target.value }
     })
   }
 
-  const handleSwitchChange = (event) => {
-    updateAppSettingsForSubtitles({ switch: event.target.value })
-  }
-
-  const handleFontChange = (event) => {
-    updateAppSettingsForSubtitles({ font: event.target.value })
+  const handleFontChange = (e) => {
+    setProfileData({
+      ...profileData,
+      ...{ font: e.target.value }
+    })
   }
 
   const handleFontSizeChange = (e) => {
-    updateAppSettingsForSubtitles({ size: e.target.value })
+    setProfileData({
+      ...profileData,
+      ...{ size: e.target.value }
+    })
   }
 
-  const handleFontColorChange = (e) => updateAppSettingsForSubtitles({ color: e.target.value })
+  const handleFontColorChange = (e) => setProfileData({
+    ...profileData,
+    ...{ color: e.target.value }
+  })
 
-  const handleLineSpacingChange = (e) => updateAppSettingsForSubtitles({ lineSpacing: e.target.value })
+  function handleBackground(e) {
+    setProfileData({
+      ...profileData,
+      ...{
+        background: colorWithOpacity(e.target.value, profileData.opacity / 100),
+        backgroundHex: e.target.value
+      }
+    })
+  }
+
+  function handleOpacity(newValue) {
+    setProfileData({
+      ...profileData,
+      ...{
+        opacity: newValue,
+        background: colorWithOpacity(profileData.backgroundHex, newValue / 100)
+      }
+    })
+  }
+
+  const handleLineSpacingChange = (e) => setProfileData({
+    ...profileData,
+    ...{ lineSpacing: e.target.value }
+  })
+
+  const handlePosition = (e) => setProfileData({
+    ...profileData,
+    ...{ position: e.target.value }
+  })
 
   return (
     <div style={{
       width: '1200px', display: 'grid',
       placeItems: 'center'
     }}>
-      <div style={{
+      {(profileData.profileId != null || editMode) && (<div style={{
         padding: '5px',
         marginBottom: '5px',
-        fontFamily: appSettings.subtitleSettings.font,
-        fontSize: `${appSettings.subtitleSettings.size}px`,
-        color: appSettings.subtitleSettings.color,
+        fontFamily: profileData.font,
+        fontSize: `${profileData.size}px`,
+        color: profileData.color
       }}>
         <div style={{ display: 'inline-block' }}>
-          <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, textAlign: 'center', display: 'block', backgroundColor: appSettings.subtitleSettings.background }}>
-            {appSettings.subtitleSettings.language === "english" ? "This is a preview of subtitles" : "Esta es una vista previa de los subtítulos"}
+          <div style={{ lineHeight: profileData.lineSpacing, textAlign: 'center', display: 'block', backgroundColor: profileData.background }}>
+            {appSettings.subtitleSettings.language === "english" ? "Preview subtitle" : "Vista previa del subtítulo"}
           </div>
-          <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, textAlign: 'center', display: 'block', backgroundColor: appSettings.subtitleSettings.background }}>
-            {appSettings.subtitleSettings.language === "english" ? "This is another line showing preview of subtitles" : " Esta es otra línea que muestra una vista previa de los subtítulos"}
+          <div style={{ lineHeight: profileData.lineSpacing, textAlign: 'center', display: 'block', backgroundColor: profileData.background }}>
+            {appSettings.subtitleSettings.language === "english" ? "Preview subtitle again" : "Vista previa del subtítulo nuevamente"}
           </div>
         </div>
-      </div>
+      </div>)}
 
-      <Stack direction="row" sx={{ bgcolor: 'rgba(0,0,0,0.8)', padding: '20px', borderRadius: '15px', width: '800px' }} spacing={1}>
+      <Stack direction="row" sx={{ bgcolor: 'rgba(0,0,0,0.8)', padding: '20px', borderRadius: '15px', height: '600px', width: '700px' }} spacing={1}>
 
         <Stack sx={{ padding: '10px', borderRight: 1, borderColor: 'gray', width: '200px' }} spacing={2}>
           <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
@@ -278,7 +307,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
 
         </Stack>
 
-        <Stack sx={{ padding: '20px', borderRight: 1, borderColor: 'gray' }}>
+        <Stack sx={{ padding: '20px' }}>
           <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
             <strong>Profiles</strong>
           </Typography>
@@ -286,160 +315,229 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
           <List dense={true} sx={{ color: 'text.primary' }}>
             {appSettings.subtitleSettings.profiles.map((profile) => (
               <ListItem disableGutters key={profile.profileId}
-                secondaryAction={!profile.preset ? <IconButton edge="end" onClick={() => handleDeleteProfile(profile.profileId)}>
-                  <DeleteIcon key={profile.profileId} />
-                </IconButton> : ""}
+                secondaryAction={
+                  <>
+                    {profile.preset && <IconButton edge="end" onClick={() => handleCopyOrEditProfile(profile.profileId, true)}>
+                      <ContentCopyIcon />
+                    </IconButton>}
+                    {!profile.preset && <IconButton edge="end" onClick={() => handleCopyOrEditProfile(profile.profileId, false)}>
+                      <Edit />
+                    </IconButton>}
+                    {!profile.preset &&
+                      <IconButton edge="end" onClick={() => handleDeleteProfile(profile.profileId)}>
+                        <DeleteIcon key={profile.profileId} />
+                      </IconButton>}
+                  </>}
               >
+
                 <ListItemButton
                   disableGutters
                   selected={appSettings.subtitleSettings.profileId === profile.profileId}
                   onClick={() => handleProfileChange(profile.profileId)}
+                  onMouseOver={() => handleProfilePreview(profile.profileId, true)}
+                  onMouseOut={() => handleProfilePreview(profile.profileId, false)}
                 >
+                  {/* <Tooltip style={{backgroundColor: "transparent"}} title={
+                    <TableContainer component={Paper}>
+                      <Table size="small">
+                        <TableBody>
+                            <TableRow>
+                              <TableCell><strong>Font</strong></TableCell>
+                              <TableCell>{profile.font}</TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell><strong>Font Size</strong></TableCell>
+                              <TableCell>{profile.size}px</TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell><strong>Font Color</strong></TableCell>
+                              <TableCell>{profile.color}</TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell><strong>Background</strong></TableCell>
+                              <TableCell>{profile.backgroundHex}</TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell><strong>Opacity</strong></TableCell>
+                              <TableCell>{profile.opacity}</TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell><strong>Line Spacing</strong></TableCell>
+                              <TableCell>{profile.lineSpacing}</TableCell>
+                            </TableRow>
+                            <TableRow>
+                              <TableCell><strong>Position</strong></TableCell>
+                              <TableCell>{profile.position}</TableCell>
+                            </TableRow>
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  }> */}
                   <ListItemText primary={profile.profileName} sx={{ paddingLeft: '10px' }} />
+                  {/* </Tooltip> */}
                 </ListItemButton>
               </ListItem>
             ))}
           </List>
         </Stack>
 
-        <Stack sx={{ padding: '10px', width: '300px' }} spacing={2}>
-
-          <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
-            <strong>Profile Settings</strong>
-          </Typography>
-
-          <TextField
-            label="Profile Name"
-            variant="outlined"
-            fullWidth
-            value={appSettings.subtitleSettings.profileName}
-            sx={{ my: 2 }}
-            onChange={handleProfileNameChange}
-            size="small"
-          />
-
-          <FormControl>
-            <InputLabel id="font-label">Font</InputLabel>
-            <Select
-              labelId="font-label"
-              id="font"
-              value={appSettings.subtitleSettings.font}
-              label="Font"
-              onChange={handleFontChange}
-              size="small"
-            >
-              {appSettings.subtitleSettings.fonts.map((font) => (
-                <MenuItem key={font} value={font} style={{ fontFamily: font }}>
-                  {font.split(",")[0]}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <FormControl>
-            <InputLabel id="fontSize-label">Font Size</InputLabel>
-            <Select
-              labelId="fontSize-label"
-              id="fontSize"
-              value={appSettings.subtitleSettings.size}
-              label="Font Size"
-              onChange={handleFontSizeChange}
-              size="small"
-            >
-              {Array.from(appSettings.subtitleSettings.sizes).map(([key, value]) => (
-                <MenuItem key={key} value={key}>{value}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <FormControl>
-            <InputLabel id="fontColor-label">Font Color</InputLabel>
-            <Select
-              labelId="fontColor-label"
-              id="fontColor"
-              value={appSettings.subtitleSettings.color}
-              label="Font Color"
-              onChange={handleFontColorChange}
-              size="small"
-            >
-              {Array.from(appSettings.subtitleSettings.colors).map(([key, value]) => (
-                <MenuItem key={key} value={key}>{value}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <FormControl>
-            <InputLabel id="fontBackground-label">Background</InputLabel>
-            <Select
-              labelId="fontBackground-label"
-              id="fontBackground"
-              value={appSettings.subtitleSettings.backgroundHex}
-              label="Background"
-              onChange={(e) => handleBackground(e)}
-              size="small"
-            >
-              {Array.from(appSettings.subtitleSettings.backgrounds).map(([key, value]) => (
-                <MenuItem key={key} value={key}>{value}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <FormControl>
-            <Typography id="input-slider" gutterBottom sx={{ color: 'text.primary' }}>
-              Background Opacity
-            </Typography>
-            <Slider
-              aria-labelledby="opacity-slider"
-              value={appSettings.subtitleSettings.opacity}
-              onChange={(e, newValue) => handleOpacity(newValue)}
-              min={0} max={100} size="small"
-              valueLabelDisplay="auto"
-              slots={{
-                valueLabel: ValueLabelComponent,
-              }} />
-          </FormControl>
-
-          <FormControl>
-            <InputLabel id="lineSpacing-label">Line Spacing</InputLabel>
-            <Select
-              labelId="lineSpacing-label"
-              id="lineSpacing"
-              value={appSettings.subtitleSettings.lineSpacing}
-              label="Line Spacing"
-              onChange={handleLineSpacingChange}
-              size="small"
-            >
-              {Array.from(appSettings.subtitleSettings.lineSpacings).map(([key, value]) => (
-                <MenuItem key={key} value={key}>{value}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <FormControl>
-            <InputLabel id="position-label">Position</InputLabel>
-            <Select
-              labelId="position-label"
-              id="position"
-              value={appSettings.subtitleSettings.position}
-              label="Position"
-              onChange={(e) => handlePosition(e)}
-              size="small"
-            >
-              <MenuItem value={"bottom"}>Bottom</MenuItem>
-              <MenuItem value={"top"}>Top</MenuItem>
-            </Select>
-          </FormControl>
-
-          <Button
-            variant="contained"
-            onClick={handleSaveProfile}
-            size="small"
-            disabled={appSettings.subtitleSettings.profiles.filter((p) => p.preset).map((p) => p.profileName).includes(appSettings.subtitleSettings.profileName)}
+        {editMode &&
+          <div
+            style={{
+              color: 'text.primary',
+              padding: "10px",
+              marginLeft: "10px",
+            }}
           >
-            Save
-          </Button>
-        </Stack>
+            {editMode && (
+              <Stack spacing={2}>
+                <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
+                  <strong>{profileData.isCopy ? "Copy" : "Edit"} Profile</strong>
+                </Typography>
+                <TextField
+                  required
+                  error={profileData.profileName === "" || appSettings.subtitleSettings.profiles.filter(p => p.profileId !== profileData.profileId).map(p => p.profileName).includes(profileData.profileName)}
+                  label="Profile Name"
+                  variant="outlined"
+                  fullWidth
+                  value={profileData.profileName}
+                  sx={{ my: 2 }}
+                  onChange={handleProfileNameChange}
+                  size="small"
+                />
+
+                <FormControl>
+                  <InputLabel id="font-label">Font</InputLabel>
+                  <Select
+                    labelId="font-label"
+                    id="font"
+                    value={profileData.font}
+                    label="Font"
+                    onChange={handleFontChange}
+                    size="small"
+                  >
+                    {appSettings.subtitleSettings.fonts.map((font) => (
+                      <MenuItem key={font} value={font} style={{ fontFamily: font }}>
+                        {font.split(",")[0]}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl>
+                  <InputLabel id="fontSize-label">Font Size</InputLabel>
+                  <Select
+                    labelId="fontSize-label"
+                    id="fontSize"
+                    value={profileData.size}
+                    label="Font Size"
+                    onChange={handleFontSizeChange}
+                    size="small"
+                  >
+                    {Array.from(appSettings.subtitleSettings.sizes).map(([key, value]) => (
+                      <MenuItem key={key} value={key}>{value}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl>
+                  <InputLabel id="fontColor-label">Font Color</InputLabel>
+                  <Select
+                    labelId="fontColor-label"
+                    id="fontColor"
+                    value={profileData.color}
+                    label="Font Color"
+                    onChange={handleFontColorChange}
+                    size="small"
+                  >
+                    {Array.from(appSettings.subtitleSettings.colors).map(([key, value]) => (
+                      <MenuItem key={key} value={key}>{value}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl>
+                  <InputLabel id="fontBackground-label">Background</InputLabel>
+                  <Select
+                    labelId="fontBackground-label"
+                    id="fontBackground"
+                    value={profileData.backgroundHex}
+                    label="Background"
+                    onChange={handleBackground}
+                    size="small"
+                  >
+                    {Array.from(appSettings.subtitleSettings.backgrounds).map(([key, value]) => (
+                      <MenuItem key={key} value={key}>{value}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl>
+                  <Typography id="input-slider" gutterBottom sx={{ color: 'text.primary' }}>
+                    Background Opacity
+                  </Typography>
+                  <Slider
+                    aria-labelledby="opacity-slider"
+                    value={profileData.opacity}
+                    onChange={(e, newValue) => handleOpacity(newValue)}
+                    min={0} max={100} size="small"
+                    valueLabelDisplay="auto"
+                    slots={{
+                      valueLabel: ValueLabelComponent,
+                    }}
+                  />
+                </FormControl>
+
+                <FormControl>
+                  <InputLabel id="lineSpacing-label">Line Spacing</InputLabel>
+                  <Select
+                    labelId="lineSpacing-label"
+                    id="lineSpacing"
+                    value={profileData.lineSpacing}
+                    label="Line Spacing"
+                    onChange={handleLineSpacingChange}
+                    size="small"
+                  >
+                    {Array.from(appSettings.subtitleSettings.lineSpacings).map(([key, value]) => (
+                      <MenuItem key={key} value={key}>{value}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl>
+                  <InputLabel id="position-label">Position</InputLabel>
+                  <Select
+                    labelId="position-label"
+                    id="position"
+                    value={profileData.position}
+                    label="Position"
+                    onChange={handlePosition}
+                    size="small"
+                  >
+                    <MenuItem value={"bottom"}>Bottom</MenuItem>
+                    <MenuItem value={"top"}>Top</MenuItem>
+                  </Select>
+                </FormControl>
+                <Button
+                  variant="contained"
+                  size="small"
+                  onClick={handleSaveProfile}
+                >
+                  Save
+                </Button>
+                <Button
+                  variant="contained"
+                  size="small"
+                  onClick={handleCancelEdit}
+                >
+                  Cancel
+                </Button>
+              </Stack>
+            )}
+          </div>
+        }
       </Stack>
+
     </div>
   );
 }

@@ -24,6 +24,27 @@ const darkTheme = createTheme({
 
 export default function App() {
 
+
+  function colorWithOpacity(colorHex, opacity) {
+    const rgb = extractRgbFromHex(colorHex)
+    return `rgb(${rgb.red}, ${rgb.green}, ${rgb.blue}, ${opacity})`;
+  }
+
+  function extractRgbFromHex(hex) {
+    hex = hex.replace(/^#/, "");
+
+    // If shorthand notation (e.g., #abc), expand it to full form (#aabbcc)
+    if (hex.length === 3) {
+      hex = hex.split('').map(char => char + char).join('');
+    }
+    // Convert to RGB values
+    const bigint = parseInt(hex, 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    return { red: r, green: g, blue: b };
+  }
+
   const remoteImg = React.useRef(null);
 
   const fonts = [
@@ -64,6 +85,7 @@ export default function App() {
     font: "Arial, sans-serif",
     size: 20,
     color: "#FFFFFF",
+    background: colorWithOpacity("#000000", 100),
     backgroundHex: "#000000",
     opacity: 100,
     lineSpacing: 1.2,
@@ -76,6 +98,7 @@ export default function App() {
     font: "Dyslexie, Arial, sans-serif",
     size: 30,
     color: "#000000",
+    background: colorWithOpacity("#FFFDD0", 100),
     backgroundHex: "#FFFDD0",
     opacity: 100,
     lineSpacing: 1.6,
@@ -88,6 +111,7 @@ export default function App() {
     font: "Arial, sans-serif",
     size: 20,
     color: "#FFFFFF",
+    background: colorWithOpacity("#000000", 100),
     backgroundHex: "#000000",
     opacity: 100,
     lineSpacing: 1.2,
@@ -100,6 +124,7 @@ export default function App() {
     font: "Arial, sans-serif",
     size: 30,
     color: "#B3EBF2",
+    background: colorWithOpacity("#000000", 100),
     backgroundHex: "#000000",
     opacity: 100,
     lineSpacing: 1.4,
@@ -112,6 +137,7 @@ export default function App() {
     font: "Arial, sans-serif",
     size: 50,
     color: "#FFFFFF",
+    background: colorWithOpacity("#000000", 100),
     backgroundHex: "#000000",
     opacity: 100,
     lineSpacing: 1.6,
@@ -122,6 +148,7 @@ export default function App() {
   const subtitleSettings = {
     switch: 'off',
     language: 'english',
+    profileId: 0,
     profiles: defaultProfiles,
     fonts: fonts,
     sizes: sizes,
@@ -130,11 +157,31 @@ export default function App() {
     lineSpacings: lineSpacings
   }
 
+  const createViewSettingsFromProfile = (profile) => {
+    return {
+      viewMode: "view",
+      viewProfileId: profile.profileId,
+      viewProfileName: profile.profileName,
+      viewFont: profile.font,
+      viewSize: profile.size,
+      viewColor: profile.color,
+      viewBackground: profile.background,
+      viewBackgroundHex: profile.backgroundHex,
+      viewOpacity: profile.opacity,
+      viewLineSpacing: profile.lineSpacing,
+      viewPosition: profile.position
+    }
+  }
+
   const [appSettings, setAppSettings] = React.useState({
     visibleBottomNav: false,
     bottomNavTabIndex: 0,
     subtitlePopupAnchorEl: null,
-    subtitleSettings: {...subtitleSettings, ...defaultProfiles[0]}
+    subtitleSettings: {
+      ...subtitleSettings, 
+      ...subtitleSettings.profiles.find((p) => p.profileId == subtitleSettings.profileId), 
+      ...createViewSettingsFromProfile(subtitleSettings.profiles.find((p) => p.profileId == subtitleSettings.profileId))
+    }
   })
 
   const subtitlesPopperOpen = Boolean(appSettings.subtitlePopupAnchorEl);
@@ -152,12 +199,17 @@ export default function App() {
     var offset = remoteImg.current.getBoundingClientRect();
     var x = Math.floor((e.pageX - offset.left) / offset.width * 10000) / 100;
     var y = Math.floor((e.pageY - offset.top) / offset.height * 10000) / 100;
-    console.log(x + "," + y)
     const newAppSettings = {}
 
     if (x > 17 && x < 31 && y > 19 && y < 23) {
       // subtitles button
       newAppSettings.visibleBottomNav = !appSettings.visibleBottomNav
+      newAppSettings.subtitleSettings = {
+        ...appSettings.subtitleSettings, 
+        ...appSettings.subtitleSettings.profiles.find((p) => p.profileId == appSettings.subtitleSettings.profileId), 
+        ...createViewSettingsFromProfile(appSettings.subtitleSettings.profiles.find((p) => p.profileId == appSettings.subtitleSettings.profileId)),
+        ...{switch: 'on'}
+      }
       if (!newAppSettings.visibleBottomNav) {
         newAppSettings.bottomNavTabIndex = 0
       } else {
@@ -180,7 +232,6 @@ export default function App() {
       newAppSettings.visibleBottomNav = false
       newAppSettings.bottomNavTabIndex = 0
     }
-
     setAppSettings({ ...appSettings, ...newAppSettings })
   }
 
@@ -193,14 +244,12 @@ export default function App() {
           fontSize: `${appSettings.subtitleSettings.size}px`,
           color: appSettings.subtitleSettings.color,
         }}>
-          {appSettings.subtitleSettings.language === "english" ? <div>
             <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, paddingLeft: '5px', paddingRight: '5px', textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background }}>
-              {appSettings.subtitleSettings.language === "english" ? "This is a preview of subtitles" : "Esta es una vista previa de los subtítulos"}
+              {appSettings.subtitleSettings.language === "english" ? "The journey begins now." : "El viaje comienza ahora."}
             </div>
             <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, paddingLeft: '5px', paddingRight: '5px', textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background }}>
-              {appSettings.subtitleSettings.language === "english" ? "This is another line showing preview of subtitles" : " Esta es otra línea que muestra una vista previa de los subtítulos"}
+              {appSettings.subtitleSettings.language === "english" ? "Are you ready?" : "¿Estás listo?"}
             </div>
-          </div> : ""}
         </div>
       </div>
     )
@@ -246,7 +295,7 @@ export default function App() {
               style={{
                 position: 'absolute',
                 bottom: `${appSettings.subtitleSettings.position === "bottom" ? "80" : "720"}px`,
-                left: `${appSettings.subtitleSettings.size === 20 ? "350" : appSettings.subtitleSettings.size === 30 ? "250" : "200" }px`,
+                left: `${appSettings.subtitleSettings.size === 20 ? "450" : appSettings.subtitleSettings.size === 30 ? "350" : "250" }px`,
                 padding: '8px 16px'
               }}
             >
