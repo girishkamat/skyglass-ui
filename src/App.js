@@ -11,6 +11,7 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import Popper from '@mui/material/Popper';
 import SubtitleCustomizer from './SubtitleCustomizer'
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import "@fontsource/opendyslexic"
 
 const darkTheme = createTheme({
   palette: {
@@ -52,14 +53,9 @@ export default function App() {
     "Helvetica, sans-serif",
     "Verdana, sans-serif",
     "Tahoma, sans-serif",
-    "Verdana, sans-serif",
-    "Roboto, sans-serif",
-    "Open Sans, sans-serif",
-    "Lato, sans-serif",
     "Times New Roman, serif",
-    "Georgia, serif",
     "Courier New, monspace",
-    "Dyslexie, Arial, sans-serif"
+    "OpenDyslexic"
   ];
 
   const sizes = new Map([
@@ -95,7 +91,7 @@ export default function App() {
     profileId: 1,
     profileName: 'Easy Read',
     preset: true,
-    font: "Dyslexie, Arial, sans-serif",
+    font: "OpenDyslexic",
     size: 30,
     color: "#000000",
     background: colorWithOpacity("#FFFDD0", 100),
