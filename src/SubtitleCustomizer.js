@@ -270,7 +270,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
         </div>
       </div>)}
 
-      <Stack direction="row" sx={{ bgcolor: 'rgba(0,0,0,0.8)', padding: '20px', borderRadius: '15px', height: '600px', width: '700px' }} spacing={1}>
+      <Stack direction="row" sx={{ bgcolor: 'rgba(0,0,0,0.8)', padding: '20px', borderRadius: '15px', height: '550px', width: '700px' }} spacing={1}>
 
         <Stack sx={{ padding: '10px', borderRight: 1, borderColor: 'gray', width: '200px' }} spacing={2}>
           <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
@@ -518,20 +518,22 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
                     <MenuItem value={"top"}>Top</MenuItem>
                   </Select>
                 </FormControl>
-                <Button
-                  variant="contained"
-                  size="small"
-                  onClick={handleSaveProfile}
-                >
-                  Save
-                </Button>
-                <Button
-                  variant="contained"
-                  size="small"
-                  onClick={handleCancelEdit}
-                >
-                  Cancel
-                </Button>
+                <Stack direction='row' spacing={2}>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    onClick={handleSaveProfile}
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    onClick={handleCancelEdit}
+                  >
+                    Cancel
+                  </Button>
+                </Stack>
               </Stack>
             )}
           </div>
