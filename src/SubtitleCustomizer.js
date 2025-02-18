@@ -263,7 +263,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
         </div>
       </div>)}
 
-      <Stack direction="row" sx={{ bgcolor: 'rgba(0,0,0,0.8)', padding: '20px', borderRadius: '15px', height: '650px', width: '1000px' }} spacing={1}>
+      <Stack direction="row" sx={{ bgcolor: 'rgba(0,0,0,0.8)', padding: '20px', borderRadius: '15px', height: '600px', width: '1000px' }} spacing={1}>
 
         <Stack sx={{ padding: '10px', borderRight: 1, borderColor: 'gray', width: '200px' }} spacing={2}>
           <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
