@@ -71,7 +71,7 @@ export default function App() {
 
   function colorWithOpacity(colorHex, opacity) {
     const rgb = extractRgbFromHex(colorHex)
-    return `rgb(${rgb.red}, ${rgb.green}, ${rgb.blue}, ${opacity})`;
+    return `rgba(${rgb.red}, ${rgb.green}, ${rgb.blue}, ${opacity/100})`;
   }
 
   function extractRgbFromHex(hex) {
@@ -87,6 +87,10 @@ export default function App() {
     const g = (bigint >> 8) & 255;
     const b = bigint & 255;
     return { red: r, green: g, blue: b };
+  }
+
+  function findSize(sizeName) {
+    return sizes.entries().find(([key, value]) => value == sizeName)[0]
   }
 
   const profileRefs = React.useRef([]);
@@ -105,7 +109,7 @@ export default function App() {
   ];
 
   const sizes = new Map([
-    [20, "Small"], [30, "Medium"], [40, "Large"], [50, "Extra Large"]
+    [20, "Small"], [25, "Medium"], [30, "Large"], [35, "Extra Large"]
   ])
 
   const colors = new Map([
@@ -125,11 +129,11 @@ export default function App() {
     profileName: 'Default',
     preset: true,
     font: "Arial, sans-serif",
-    size: 20,
+    size: findSize("Small"),
     color: "#FFFFFF",
-    background: colorWithOpacity("#000000", 100),
+    background: colorWithOpacity("#000000", 60),
     backgroundHex: "#000000",
-    opacity: 100,
+    opacity: 60,
     lineSpacing: 1.2,
     position: "bottom",
     description: "Default settings suitable for most users"
@@ -139,7 +143,7 @@ export default function App() {
     profileName: 'Easy Read',
     preset: true,
     font: "OpenDyslexic",
-    size: 30,
+    size: findSize("Large"),
     color: "#000000",
     background: colorWithOpacity("#FFFDD0", 100),
     backgroundHex: "#FFFDD0",
@@ -153,7 +157,7 @@ export default function App() {
     profileName: 'High Contrast',
     preset: true,
     font: "Arial, sans-serif",
-    size: 20,
+    size: findSize("Medium"),
     color: "#FFFFFF",
     background: colorWithOpacity("#000000", 100),
     backgroundHex: "#000000",
@@ -167,7 +171,7 @@ export default function App() {
     profileName: 'Low Distraction',
     preset: true,
     font: "Arial, sans-serif",
-    size: 30,
+    size: findSize("Medium"),
     color: "#B3EBF2",
     background: colorWithOpacity("#000000", 100),
     backgroundHex: "#000000",
@@ -181,7 +185,7 @@ export default function App() {
     profileName: 'Ultra Visible',
     preset: true,
     font: "Arial, sans-serif",
-    size: 50,
+    size: findSize("Extra Large"),
     color: "#FFFFFF",
     background: colorWithOpacity("#000000", 100),
     backgroundHex: "#000000",
@@ -194,7 +198,6 @@ export default function App() {
 
   const subtitleSettings = {
     switch: 'off',
-    language: 'english',
     profileId: 0,
     profiles: defaultProfiles,
     fonts: fonts,
@@ -262,72 +265,68 @@ export default function App() {
     setAppSettings({ ...appSettings, ...newAppSettings })
   }
 
-  const subtitleComponent = (language) => {
+  const subtitleComponent = () => {
     return (
-      <div style={{ display: 'inline-block' }}>
-        <div style={{
-          marginBottom: '10px',
-          fontFamily: appSettings.subtitleSettings.font,
-          fontSize: `${appSettings.subtitleSettings.size}px`,
-          color: appSettings.subtitleSettings.color,
-        }}>
-          <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, paddingLeft: '5px', paddingRight: '5px', textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background }}>
-            {appSettings.subtitleSettings.language === "english" ? "The journey begins now." : "El viaje comienza ahora."}
-          </div>
-          <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, paddingLeft: '5px', paddingRight: '5px', textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background }}>
-            {appSettings.subtitleSettings.language === "english" ? "Are you ready?" : "¿Estás listo?"}
-          </div>
+      <div style={{
+        fontFamily: appSettings.subtitleSettings.font,
+        fontSize: `${appSettings.subtitleSettings.size}pt`,
+        color: appSettings.subtitleSettings.color,
+      }}>
+        <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background, whiteSpace: 'nowrap' }}>
+          The journey begins now.
+        </div>
+        <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background, whiteSpace: 'nowrap' }}>
+          Are you ready?
         </div>
       </div>
+
     )
   }
 
   return (
-    <div className="container">
-      <div className="tvContainer">
-        <Box sx={{ maxWidth: '100%', maxHeight: '100%', display: 'inline-block', position: 'relative' }}>
-          <img src='/movie5.jpg' className="movieImage" />
-          <ThemeProvider theme={darkTheme}>
-            <Popper
-              id={subtitlesPopperId}
-              open={subtitlesPopperOpen}
-              anchorEl={appSettings.subtitlePopupAnchorEl}
-              placement='top'
-            >
-              <SubtitleCustomizer appSettings={appSettings} setAppSettings={setAppSettings} profileRefs={profileRefs} />
-            </Popper>
+    <div className="container" style={{ padding: '10px', display: 'flex' }}>
+      <Box sx={{ maxWidth: '100%', maxHeight: '100%', display: 'inline-block', width: '1200px', position: 'relative', justifyContent: 'center' }}>
+        <img src='/movie5.jpg' className="movieImage" />
+        <ThemeProvider theme={darkTheme}>
+          <Popper
+            id={subtitlesPopperId}
+            open={subtitlesPopperOpen}
+            anchorEl={appSettings.subtitlePopupAnchorEl}
+            placement='top'
+          >
+            <SubtitleCustomizer appSettings={appSettings} setAppSettings={setAppSettings} profileRefs={profileRefs} />
+          </Popper>
 
-            {appSettings.visibleBottomNav ?
-              <BottomNavigation
-                id="subtitlesNav"
-                showLabels
-                value={appSettings.bottomNavTabIndex}
-                onChange={(event, newValue) => {
-                  setAppSettings({ ...appSettings, bottomNavTabIndex: newValue })
-                }}
-                sx={{ position: 'relative', left: 20, bottom: 80, width: '100%' }}
-              >
-                <BottomNavigationAction label="Search" icon={<SearchIcon />} />
-                <BottomNavigationAction label="Subtitles" icon={<SubtitlesIcon />} />
-                <BottomNavigationAction label="Audio Description" icon={<AudiotrackIcon />} />
-                <BottomNavigationAction label="Viewing Mode" icon={<AspectRatioIcon />} />
-                <BottomNavigationAction label="Night Mode" icon={<DarkModeIcon />} />
-              </BottomNavigation>
-              : ""}
-          </ThemeProvider>
-        </Box>
+          {appSettings.visibleBottomNav ?
+            <BottomNavigation
+              id="subtitlesNav"
+              showLabels
+              value={appSettings.bottomNavTabIndex}
+              onChange={(event, newValue) => {
+                setAppSettings({ ...appSettings, bottomNavTabIndex: newValue })
+              }}
+              sx={{ position: 'relative', left: 20, bottom: 80, width: '100%' }}
+            >
+              <BottomNavigationAction label="Search" icon={<SearchIcon />} />
+              <BottomNavigationAction label="Subtitles" icon={<SubtitlesIcon />} />
+              <BottomNavigationAction label="Audio Description" icon={<AudiotrackIcon />} />
+              <BottomNavigationAction label="Viewing Mode" icon={<AspectRatioIcon />} />
+              <BottomNavigationAction label="Night Mode" icon={<DarkModeIcon />} />
+            </BottomNavigation>
+            : ""}
+        </ThemeProvider>
         {appSettings.subtitleSettings.switch === "on" && appSettings.visibleBottomNav === false &&
           <div
             style={{
               position: 'absolute',
-              bottom: `${appSettings.subtitleSettings.position === "bottom" ? "80" : "700"}px`,
-              left: `${appSettings.subtitleSettings.size === 20 ? "450" : appSettings.subtitleSettings.size === 30 ? "360" : appSettings.subtitleSettings.size === 40 ? "300" : "250"}px`,
-              padding: '8px 16px'
+              left: '50%',
+              transform: 'translateX(-50%)',
+              bottom: `${appSettings.subtitleSettings.position === "bottom" ? "15%" : "80%"}`,
             }}
           >
-            {subtitleComponent(appSettings.subtitleSettings.language)}
+            {subtitleComponent()}
           </div>}
-      </div>
+      </Box>
       <div className="remoteContainer">
         <img onClick={handleRemoteClick} ref={remoteImg} src='/sky-remote.jpg' className="remoteImage" />
       </div>
