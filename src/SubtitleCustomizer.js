@@ -18,7 +18,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import Edit from "@mui/icons-material/Edit";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
-export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
+export default function SubtitleCustomizer({ appSettings, setAppSettings, profileRefs }) {
 
   const [profileData, setProfileData] = React.useState({})
   const [editMode, setEditMode] = React.useState(false)
@@ -163,7 +163,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
           ...profileData,
           profiles: [
             ...appSettings.subtitleSettings.profiles.filter((profile) => profile.profileId !== profileData.profileId), 
-            {...profileData, preset: false}
+            {...profileData, preset: false, description: null}
           ]
         })
       } else {
@@ -171,7 +171,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
           ...profileData,
           profiles: [
             ...appSettings.subtitleSettings.profiles, 
-            {...profileData, preset: false}
+            {...profileData, preset: false, description: null}
           ]
         })
       }
@@ -263,7 +263,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
         </div>
       </div>)}
 
-      <Stack direction="row" sx={{ bgcolor: 'rgba(0,0,0,0.8)', padding: '20px', borderRadius: '15px', height: '550px', width: '700px' }} spacing={1}>
+      <Stack direction="row" sx={{ bgcolor: 'rgba(0,0,0,0.8)', padding: '20px', borderRadius: '15px', height: '650px', width: '1000px' }} spacing={1}>
 
         <Stack sx={{ padding: '10px', borderRight: 1, borderColor: 'gray', width: '200px' }} spacing={2}>
           <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
@@ -306,7 +306,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
           </Typography>
 
           <List dense={true} sx={{ color: 'text.primary' }}>
-            {appSettings.subtitleSettings.profiles.map((profile) => (
+            {appSettings.subtitleSettings.profiles.map((profile, index) => (
               <ListItem disableGutters key={profile.profileId}
                 secondaryAction={
                   <>
@@ -329,8 +329,18 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
                   onClick={() => handleProfileChange(profile.profileId)}
                   onMouseOver={() => handleProfileMouseOver(profile.profileId)}
                   onMouseOut={() => handleProfileMouseOut()}
+                  ref={(el) => (profileRefs.current[index] = el)}
                 >
-                  <ListItemText primary={profile.profileName} sx={{ paddingLeft: '10px' }} />
+                  <ListItemText 
+                    primary={profile.profileName} sx={{ paddingLeft: '10px', color: 'text.primary' }} 
+                    secondary={profile.description && 
+                      <React.Fragment>
+                        <Typography sx={{ color: 'text.disabled',  width: '350px'}}>
+                          {profile.description}
+                        </Typography>
+                      </React.Fragment>
+                    }
+                  />
                 </ListItemButton>
               </ListItem>
             ))}

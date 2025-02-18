@@ -51,6 +51,16 @@ class Remote {
     return x > 17 && x < 36 && y > 32 && y < 42
   }
 
+  isUpButton(e) {
+    const [x, y] = this.coordinates(e)
+    return x > 28 && x < 73 && y > 27 && y < 32
+  }
+
+  isDownButton(e) {
+    const [x, y] = this.coordinates(e)
+    return x > 30 && x < 67 && y > 40 && y < 45
+  }
+
   isBackButton(e) {
     const [x, y] = this.coordinates(e)
     return x > 17 && x < 31 && y > 50 && y < 54
@@ -79,8 +89,9 @@ export default function App() {
     return { red: r, green: g, blue: b };
   }
 
+  const profileRefs = React.useRef([]);
   const remoteImg = React.useRef(null);
-  const remote = new Remote(remoteImg)
+  const remote = new Remote(remoteImg);
 
   const fonts = [
     "Arial, sans-serif",
@@ -120,7 +131,8 @@ export default function App() {
     backgroundHex: "#000000",
     opacity: 100,
     lineSpacing: 1.2,
-    position: "bottom"
+    position: "bottom",
+    description: "Default settings suitable for most users"
   },
   {
     profileId: 1,
@@ -133,7 +145,8 @@ export default function App() {
     backgroundHex: "#FFFDD0",
     opacity: 100,
     lineSpacing: 1.6,
-    position: "bottom"
+    position: "bottom",
+    description: "For users with dyslexia or cognitive processing challenges who need enhanced readability"
   },
   {
     profileId: 2,
@@ -146,7 +159,8 @@ export default function App() {
     backgroundHex: "#000000",
     opacity: 100,
     lineSpacing: 1.2,
-    position: "bottom"
+    position: "bottom",
+    description: "For users with colour blindness who need distinct, high-contrast subtitles"
   },
   {
     profileId: 3,
@@ -159,7 +173,8 @@ export default function App() {
     backgroundHex: "#000000",
     opacity: 100,
     lineSpacing: 1.4,
-    position: "bottom"
+    position: "bottom",
+    description: "For users with sensory sensitivities who need minimal visual interference"
   },
   {
     profileId: 4,
@@ -172,7 +187,8 @@ export default function App() {
     backgroundHex: "#000000",
     opacity: 100,
     lineSpacing: 1.6,
-    position: "bottom"
+    position: "bottom",
+    description: "For users with visual impairments who need large, high-contrast subtitles"
   }
   ]
 
@@ -212,8 +228,6 @@ export default function App() {
   const handleRemoteClick = (e) => {
 
     const newAppSettings = {}
-
-    console.log("" + remote.coordinates(e))
 
     if (remote.isSubtitles(e)) {
       // subtitles button
@@ -280,7 +294,7 @@ export default function App() {
               anchorEl={appSettings.subtitlePopupAnchorEl}
               placement='top'
             >
-              <SubtitleCustomizer appSettings={appSettings} setAppSettings={setAppSettings}/>
+              <SubtitleCustomizer appSettings={appSettings} setAppSettings={setAppSettings} profileRefs={profileRefs} />
             </Popper>
 
             {appSettings.visibleBottomNav ?
@@ -302,18 +316,17 @@ export default function App() {
               : ""}
           </ThemeProvider>
         </Box>
-        {appSettings.subtitleSettings.switch === "on" && appSettings.visibleBottomNav === false ?
-          <div>
-            <div
-              style={{
-                position: 'absolute',
-                bottom: `${appSettings.subtitleSettings.position === "bottom" ? "80" : "700"}px`,
-                left: `${appSettings.subtitleSettings.size === 20 ? "450" : appSettings.subtitleSettings.size === 30 ? "400" : appSettings.subtitleSettings.size === 40 ? "350" : "300"}px`,
-                padding: '8px 16px'
-              }}
-            >
-              {subtitleComponent(appSettings.subtitleSettings.language)}
-            </div></div> : ""}
+        {appSettings.subtitleSettings.switch === "on" && appSettings.visibleBottomNav === false &&
+          <div
+            style={{
+              position: 'absolute',
+              bottom: `${appSettings.subtitleSettings.position === "bottom" ? "80" : "700"}px`,
+              left: `${appSettings.subtitleSettings.size === 20 ? "450" : appSettings.subtitleSettings.size === 30 ? "360" : appSettings.subtitleSettings.size === 40 ? "300" : "250"}px`,
+              padding: '8px 16px'
+            }}
+          >
+            {subtitleComponent(appSettings.subtitleSettings.language)}
+          </div>}
       </div>
       <div className="remoteContainer">
         <img onClick={handleRemoteClick} ref={remoteImg} src='/sky-remote.jpg' className="remoteImage" />
