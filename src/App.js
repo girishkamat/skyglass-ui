@@ -12,6 +12,7 @@ import Popper from '@mui/material/Popper';
 import SubtitleCustomizer from './SubtitleCustomizer'
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import "@fontsource/opendyslexic"
+import "@fontsource/roboto";
 
 const darkTheme = createTheme({
   palette: {
@@ -22,9 +23,41 @@ const darkTheme = createTheme({
   },
 });
 
+class Remote {
+
+  constructor(remoteImg) {
+    this.remoteImg = remoteImg
+  }
+
+  coordinates(e) {
+    var offset = this.remoteImg.current.getBoundingClientRect();
+    var x = Math.floor((e.pageX - offset.left) / offset.width * 10000) / 100;
+    var y = Math.floor((e.pageY - offset.top) / offset.height * 10000) / 100;
+    return [x, y]
+  }
+
+  isSubtitles(e) {
+    const [x, y] = this.coordinates(e)
+    return x > 17 && x < 31 && y > 19 && y < 23
+  }
+
+  isRightButton(e) {
+    const [x, y] = this.coordinates(e)
+    return x > 60 && x < 82 && y > 31 && y < 40
+  }
+
+  isLeftButton(e) {
+    const [x, y] = this.coordinates(e)
+    return x > 17 && x < 36 && y > 32 && y < 42
+  }
+
+  isBackButton(e) {
+    const [x, y] = this.coordinates(e)
+    return x > 17 && x < 31 && y > 50 && y < 54
+  }
+}
 
 export default function App() {
-
 
   function colorWithOpacity(colorHex, opacity) {
     const rgb = extractRgbFromHex(colorHex)
@@ -47,15 +80,17 @@ export default function App() {
   }
 
   const remoteImg = React.useRef(null);
+  const remote = new Remote(remoteImg)
 
   const fonts = [
     "Arial, sans-serif",
+    "Courier New, monspace",
     "Helvetica, sans-serif",
-    "Verdana, sans-serif",
+    "OpenDyslexic",
+    "Roboto",
     "Tahoma, sans-serif",
     "Times New Roman, serif",
-    "Courier New, monspace",
-    "OpenDyslexic"
+    "Verdana, sans-serif",
   ];
 
   const sizes = new Map([
@@ -139,7 +174,7 @@ export default function App() {
     lineSpacing: 1.6,
     position: "bottom"
   }
-]
+  ]
 
   const subtitleSettings = {
     switch: 'off',
@@ -153,30 +188,13 @@ export default function App() {
     lineSpacings: lineSpacings
   }
 
-  const createViewSettingsFromProfile = (profile) => {
-    return {
-      viewMode: "view",
-      viewProfileId: profile.profileId,
-      viewProfileName: profile.profileName,
-      viewFont: profile.font,
-      viewSize: profile.size,
-      viewColor: profile.color,
-      viewBackground: profile.background,
-      viewBackgroundHex: profile.backgroundHex,
-      viewOpacity: profile.opacity,
-      viewLineSpacing: profile.lineSpacing,
-      viewPosition: profile.position
-    }
-  }
-
   const [appSettings, setAppSettings] = React.useState({
     visibleBottomNav: false,
     bottomNavTabIndex: 0,
     subtitlePopupAnchorEl: null,
     subtitleSettings: {
-      ...subtitleSettings, 
-      ...subtitleSettings.profiles.find((p) => p.profileId == subtitleSettings.profileId), 
-      ...createViewSettingsFromProfile(subtitleSettings.profiles.find((p) => p.profileId == subtitleSettings.profileId))
+      ...subtitleSettings,
+      ...subtitleSettings.profiles.find((p) => p.profileId == subtitleSettings.profileId),
     }
   })
 
@@ -192,38 +210,37 @@ export default function App() {
   }, [appSettings.bottomNavTabIndex]);
 
   const handleRemoteClick = (e) => {
-    var offset = remoteImg.current.getBoundingClientRect();
-    var x = Math.floor((e.pageX - offset.left) / offset.width * 10000) / 100;
-    var y = Math.floor((e.pageY - offset.top) / offset.height * 10000) / 100;
+
     const newAppSettings = {}
 
-    if (x > 17 && x < 31 && y > 19 && y < 23) {
+    console.log("" + remote.coordinates(e))
+
+    if (remote.isSubtitles(e)) {
       // subtitles button
       newAppSettings.visibleBottomNav = !appSettings.visibleBottomNav
       newAppSettings.subtitleSettings = {
-        ...appSettings.subtitleSettings, 
-        ...appSettings.subtitleSettings.profiles.find((p) => p.profileId == appSettings.subtitleSettings.profileId), 
-        ...createViewSettingsFromProfile(appSettings.subtitleSettings.profiles.find((p) => p.profileId == appSettings.subtitleSettings.profileId)),
-        ...{switch: 'on'}
+        ...appSettings.subtitleSettings,
+        ...appSettings.subtitleSettings.profiles.find((p) => p.profileId == appSettings.subtitleSettings.profileId),
+        switch: 'on'
       }
       if (!newAppSettings.visibleBottomNav) {
         newAppSettings.bottomNavTabIndex = 0
       } else {
         newAppSettings.bottomNavTabIndex = 1
       }
-    } else if (x > 60 && x < 82 && y > 31 && y < 40) {
+    } else if (remote.isRightButton(e)) {
       // right button
       const newBottomNavTabIndex = appSettings.bottomNavTabIndex + 1
       if (newBottomNavTabIndex >= 0 && newBottomNavTabIndex <= 4) {
         newAppSettings.bottomNavTabIndex = newBottomNavTabIndex
       }
-    } else if (x > 17 && x < 36 && y > 32 && y < 42) {
+    } else if (remote.isLeftButton(e)) {
       // left button
       const newBottomNavTabIndex = appSettings.bottomNavTabIndex - 1
       if (newBottomNavTabIndex >= 0 && newBottomNavTabIndex <= 4) {
         newAppSettings.bottomNavTabIndex = newBottomNavTabIndex
       }
-    } else if (x > 17 && x < 31 && y > 50 && y < 54) {
+    } else if (remote.isBackButton(e)) {
       // back button
       newAppSettings.visibleBottomNav = false
       newAppSettings.bottomNavTabIndex = 0
@@ -240,12 +257,12 @@ export default function App() {
           fontSize: `${appSettings.subtitleSettings.size}px`,
           color: appSettings.subtitleSettings.color,
         }}>
-            <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, paddingLeft: '5px', paddingRight: '5px', textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background }}>
-              {appSettings.subtitleSettings.language === "english" ? "The journey begins now." : "El viaje comienza ahora."}
-            </div>
-            <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, paddingLeft: '5px', paddingRight: '5px', textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background }}>
-              {appSettings.subtitleSettings.language === "english" ? "Are you ready?" : "¿Estás listo?"}
-            </div>
+          <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, paddingLeft: '5px', paddingRight: '5px', textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background }}>
+            {appSettings.subtitleSettings.language === "english" ? "The journey begins now." : "El viaje comienza ahora."}
+          </div>
+          <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, paddingLeft: '5px', paddingRight: '5px', textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background }}>
+            {appSettings.subtitleSettings.language === "english" ? "Are you ready?" : "¿Estás listo?"}
+          </div>
         </div>
       </div>
     )
@@ -263,7 +280,7 @@ export default function App() {
               anchorEl={appSettings.subtitlePopupAnchorEl}
               placement='top'
             >
-              <SubtitleCustomizer appSettings={appSettings} setAppSettings={setAppSettings} />
+              <SubtitleCustomizer appSettings={appSettings} setAppSettings={setAppSettings}/>
             </Popper>
 
             {appSettings.visibleBottomNav ?
@@ -290,8 +307,8 @@ export default function App() {
             <div
               style={{
                 position: 'absolute',
-                bottom: `${appSettings.subtitleSettings.position === "bottom" ? "80" : "720"}px`,
-                left: `${appSettings.subtitleSettings.size === 20 ? "450" : appSettings.subtitleSettings.size === 30 ? "350" : "250" }px`,
+                bottom: `${appSettings.subtitleSettings.position === "bottom" ? "80" : "700"}px`,
+                left: `${appSettings.subtitleSettings.size === 20 ? "450" : appSettings.subtitleSettings.size === 30 ? "400" : appSettings.subtitleSettings.size === 40 ? "350" : "300"}px`,
                 padding: '8px 16px'
               }}
             >

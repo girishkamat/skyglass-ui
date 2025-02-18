@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 import PropTypes from 'prop-types';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -17,10 +17,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ListItemButton from '@mui/material/ListItemButton';
 import Edit from "@mui/icons-material/Edit";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import { Table, TableBody, TableCell, TableContainer, TableRow, Paper } from "@mui/material";
 
 export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
-
 
   const [profileData, setProfileData] = React.useState({})
   const [editMode, setEditMode] = React.useState(false)
@@ -111,24 +109,19 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
   const handleProfileChange = (newProfileId) => {
     const profile = appSettings.subtitleSettings.profiles.find((p) => p.profileId == newProfileId)
     updateAppSettingsForSubtitles({
-      profileId: newProfileId,
-      profileName: profile.profileName,
-      font: profile.font,
-      size: profile.size,
-      color: profile.color,
-      background: colorWithOpacity(profile.backgroundHex, profile.opacity),
-      backgroundHex: profile.backgroundHex,
-      opacity: profile.opacity,
-      lineSpacing: profile.lineSpacing,
-      position: profile.position
+      ...profile
     })
   }
 
-  const handleProfilePreview = (profileId, show) => {
-    if(show) {
+  const handleProfileMouseOver = (profileId) => {
+    if(!editMode) {
       const profile = appSettings.subtitleSettings.profiles.find((p) => p.profileId == profileId)
       setProfileData({ ...profile })
-    } else {
+    }
+  }
+
+  const handleProfileMouseOut = () => {
+    if(!editMode) {
       setProfileData({})
     }
   }
@@ -334,47 +327,10 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings }) {
                   disableGutters
                   selected={appSettings.subtitleSettings.profileId === profile.profileId}
                   onClick={() => handleProfileChange(profile.profileId)}
-                  onMouseOver={() => handleProfilePreview(profile.profileId, true)}
-                  onMouseOut={() => handleProfilePreview(profile.profileId, false)}
+                  onMouseOver={() => handleProfileMouseOver(profile.profileId)}
+                  onMouseOut={() => handleProfileMouseOut()}
                 >
-                  {/* <Tooltip style={{backgroundColor: "transparent"}} title={
-                    <TableContainer component={Paper}>
-                      <Table size="small">
-                        <TableBody>
-                            <TableRow>
-                              <TableCell><strong>Font</strong></TableCell>
-                              <TableCell>{profile.font}</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell><strong>Font Size</strong></TableCell>
-                              <TableCell>{profile.size}px</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell><strong>Font Color</strong></TableCell>
-                              <TableCell>{profile.color}</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell><strong>Background</strong></TableCell>
-                              <TableCell>{profile.backgroundHex}</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell><strong>Opacity</strong></TableCell>
-                              <TableCell>{profile.opacity}</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell><strong>Line Spacing</strong></TableCell>
-                              <TableCell>{profile.lineSpacing}</TableCell>
-                            </TableRow>
-                            <TableRow>
-                              <TableCell><strong>Position</strong></TableCell>
-                              <TableCell>{profile.position}</TableCell>
-                            </TableRow>
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  }> */}
                   <ListItemText primary={profile.profileName} sx={{ paddingLeft: '10px' }} />
-                  {/* </Tooltip> */}
                 </ListItemButton>
               </ListItem>
             ))}
