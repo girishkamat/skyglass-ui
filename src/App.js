@@ -150,7 +150,7 @@ export default function App() {
     lineSpacing: findLineSpacing("Medium"),
     letterSpacing: findLetterSpacing("Standard"),
     position: "bottom",
-    description: "Default settings suitable for most users"
+    description: "Industry standards for readability and accessibility"
   },
   {
     profileId: 1,
