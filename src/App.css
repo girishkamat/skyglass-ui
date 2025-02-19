@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'Tiresias';
+  src: url('/public/fonts/Tiresias_Infofont.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
 .container {
   display:grid;
   grid-template-columns: 20fr 80fr;

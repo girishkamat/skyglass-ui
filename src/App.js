@@ -105,6 +105,7 @@ export default function App() {
     "Roboto",
     "Tahoma, sans-serif",
     "Times New Roman, serif",
+    "Tiresias, sans-serif",
     "Verdana, sans-serif",
   ];
 

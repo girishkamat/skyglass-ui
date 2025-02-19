@@ -17,6 +17,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ListItemButton from '@mui/material/ListItemButton';
 import Edit from "@mui/icons-material/Edit";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import AddBoxTwoToneIcon from '@mui/icons-material/AddBoxTwoTone';
 
 export default function SubtitleCustomizer({ appSettings, setAppSettings, profileRefs }) {
 
@@ -54,7 +55,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
 
   function colorWithOpacity(colorHex, opacity) {
     const rgb = extractRgbFromHex(colorHex)
-    return `rgba(${rgb.red}, ${rgb.green}, ${rgb.blue}, ${opacity/100})`;
+    return `rgba(${rgb.red}, ${rgb.green}, ${rgb.blue}, ${opacity / 100})`;
   }
 
   // Blend semi-transparent background over white
@@ -110,7 +111,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
   }
 
   const handleProfileMouseOver = (profileId) => {
-    if(!editMode) {
+    if (!editMode) {
       const profile = appSettings.subtitleSettings.profiles.find((p) => p.profileId == profileId)
       console.log(profile)
       setProfileData({ ...profile })
@@ -118,18 +119,18 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
   }
 
   const handleProfileMouseOut = () => {
-    if(!editMode) {
+    if (!editMode) {
       setProfileData({})
     }
   }
 
-  const handleCopyOrEditProfile = (profileId, isCopy) => {
+  const addEditOrCopy = (profileId, mode) => {
     const profile = appSettings.subtitleSettings.profiles.find((p) => p.profileId == profileId)
     setProfileData({
       ...profile,
-      isCopy: isCopy,
-      profileId: isCopy ? (Math.max(...appSettings.subtitleSettings.profiles.map((p) => p.profileId)) + 1) : profileId,
-      profileName: isCopy ? '' : profile.profileName
+      mode: mode,
+      profileId: mode === "Edit" ? profileId : (Math.max(...appSettings.subtitleSettings.profiles.map((p) => p.profileId)) + 1),
+      profileName: mode === "Edit" ? profile.profileName : ''
     })
     setEditMode(true)
   }
@@ -159,16 +160,16 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
         updateAppSettingsForSubtitles({
           ...profileData,
           profiles: [
-            ...appSettings.subtitleSettings.profiles.filter((profile) => profile.profileId !== profileData.profileId), 
-            {...profileData, preset: false, description: null}
+            ...appSettings.subtitleSettings.profiles.filter((profile) => profile.profileId !== profileData.profileId),
+            { ...profileData, preset: false, description: null }
           ]
         })
       } else {
         updateAppSettingsForSubtitles({
           ...profileData,
           profiles: [
-            ...appSettings.subtitleSettings.profiles, 
-            {...profileData, preset: false, description: null}
+            ...appSettings.subtitleSettings.profiles,
+            { ...profileData, preset: false, description: null }
           ]
         })
       }
@@ -282,21 +283,27 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
         </Stack>
 
         <Stack sx={{ padding: '20px' }}>
-          <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
-            <strong>Profiles</strong>
-          </Typography>
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
+              <strong>Profiles</strong>
+            </Typography>
+            <IconButton variant="contained" onClick={() => addEditOrCopy(0, "Add")}>
+                <AddBoxTwoToneIcon fontSize="large" />
+              </IconButton>
+          </Box>
 
-          <List dense={true} sx={{ color: 'text.primary', width: '100%', maxWidth: 460, overflowX: 'hidden', overflowY: 'auto'}}>
+
+          <List dense={true} sx={{ color: 'text.primary', width: '100%', maxWidth: 460, overflowX: 'hidden', overflowY: 'auto' }}>
             {appSettings.subtitleSettings.profiles.map((profile, index) => (
-              <ListItem 
-                disablePadding 
+              <ListItem
+                disablePadding
                 key={profile.profileId}
                 secondaryAction={
                   <>
-                    {profile.preset && <IconButton edge="end" onClick={() => handleCopyOrEditProfile(profile.profileId, true)}>
+                    {profile.preset && <IconButton edge="end" onClick={() => addEditOrCopy(profile.profileId, "Copy")}>
                       <ContentCopyIcon />
                     </IconButton>}
-                    {!profile.preset && <IconButton edge="end" onClick={() => handleCopyOrEditProfile(profile.profileId, false)}>
+                    {!profile.preset && <IconButton edge="end" onClick={() => addEditOrCopy(profile.profileId, "Edit")}>
                       <Edit />
                     </IconButton>}
                     {!profile.preset &&
@@ -314,11 +321,11 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
                   onMouseOut={() => handleProfileMouseOut()}
                   ref={(el) => (profileRefs.current[index] = el)}
                 >
-                  <ListItemText 
-                    primary={profile.profileName} sx={{ paddingLeft: '10px', color: 'text.primary' }} 
-                    secondary={profile.description && 
+                  <ListItemText
+                    primary={profile.profileName} sx={{ paddingLeft: '10px', color: 'text.primary' }}
+                    secondary={profile.description &&
                       <React.Fragment>
-                        <Typography sx={{ color: 'text.disabled',  width: '350px'}}>
+                        <Typography sx={{ color: 'text.disabled', width: '350px' }}>
                           {profile.description}
                         </Typography>
                       </React.Fragment>
@@ -341,7 +348,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
             {editMode && (
               <Stack spacing={2}>
                 <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
-                  <strong>{profileData.isCopy ? "Copy" : "Edit"} Profile</strong>
+                  <strong>{profileData.mode} Profile</strong>
                 </Typography>
                 <TextField
                   required
