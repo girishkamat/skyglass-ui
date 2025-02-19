@@ -234,6 +234,11 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
     ...{ lineSpacing: e.target.value }
   })
 
+  const handleLetterSpacingChange = (e) => setProfileData({
+    ...profileData,
+    ...{ letterSpacing: e.target.value }
+  })
+
   const handlePosition = (e) => setProfileData({
     ...profileData,
     ...{ position: e.target.value }
@@ -252,10 +257,10 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
         color: profileData.color
       }}>
         <div style={{ display: 'inline-block' }}>
-          <div style={{ lineHeight: profileData.lineSpacing, textAlign: 'center', display: 'block', backgroundColor: profileData.background }}>
+          <div style={{ lineHeight: profileData.lineSpacing, letterSpacing: `${profileData.letterSpacing}rem`, textAlign: 'center', display: 'block', backgroundColor: profileData.background }}>
             Preview subtitle
           </div>
-          <div style={{ lineHeight: profileData.lineSpacing, textAlign: 'center', display: 'block', backgroundColor: profileData.background }}>
+          <div style={{ lineHeight: profileData.lineSpacing, letterSpacing: `${profileData.letterSpacing}rem`, textAlign: 'center', display: 'block', backgroundColor: profileData.background }}>
             Preview subtitle again
           </div>
         </div>
@@ -455,6 +460,22 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
                     size="small"
                   >
                     {Array.from(appSettings.subtitleSettings.lineSpacings).map(([key, value]) => (
+                      <MenuItem key={key} value={key}>{value}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl>
+                  <InputLabel id="letterSpacing-label">Letter Spacing</InputLabel>
+                  <Select
+                    labelId="letterSpacing-label"
+                    id="letterSpacing"
+                    value={profileData.letterSpacing}
+                    label="Letter Spacing"
+                    onChange={handleLetterSpacingChange}
+                    size="small"
+                  >
+                    {Array.from(appSettings.subtitleSettings.letterSpacings).map(([key, value]) => (
                       <MenuItem key={key} value={key}>{value}</MenuItem>
                     ))}
                   </Select>

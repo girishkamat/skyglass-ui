@@ -93,6 +93,14 @@ export default function App() {
     return sizes.entries().find(([key, value]) => value == sizeName)[0]
   }
 
+  function findLetterSpacing(letterSpacingName) {
+    return letterSpacings.entries().find(([key, value]) => value == letterSpacingName)[0]
+  }
+
+  function findLineSpacing(lineSpacingName) {
+    return lineSpacings.entries().find(([key, value]) => value == lineSpacingName)[0]
+  }
+
   const profileRefs = React.useRef([]);
   const remoteImg = React.useRef(null);
   const remote = new Remote(remoteImg);
@@ -125,6 +133,10 @@ export default function App() {
     ["1.2", "Low"], ["1.4", "Medium"], ["1.6", "High"]
   ])
 
+  const letterSpacings = new Map([
+    ["0", "Standard"], ["0.05", "Increased"], ["0.1", "Extra"]
+  ])
+
   const defaultProfiles = [{
     profileId: 0,
     profileName: 'Default',
@@ -132,10 +144,11 @@ export default function App() {
     font: "Arial, sans-serif",
     size: findSize("Small"),
     color: "#FFFFFF",
-    background: colorWithOpacity("#000000", 60),
+    background: colorWithOpacity("#000000", 40),
     backgroundHex: "#000000",
-    opacity: 60,
-    lineSpacing: 1.2,
+    opacity: 40,
+    lineSpacing: findLineSpacing("Medium"),
+    letterSpacing: findLetterSpacing("Standard"),
     position: "bottom",
     description: "Default settings suitable for most users"
   },
@@ -149,7 +162,8 @@ export default function App() {
     background: colorWithOpacity("#FFFDD0", 100),
     backgroundHex: "#FFFDD0",
     opacity: 100,
-    lineSpacing: 1.6,
+    lineSpacing: findLineSpacing("High"),
+    letterSpacing: findLetterSpacing("Increased"),
     position: "bottom",
     description: "For users with dyslexia or cognitive processing challenges who need enhanced readability"
   },
@@ -163,7 +177,8 @@ export default function App() {
     background: colorWithOpacity("#000000", 100),
     backgroundHex: "#000000",
     opacity: 100,
-    lineSpacing: 1.2,
+    lineSpacing: findLineSpacing("Medium"),
+    letterSpacing: findLetterSpacing("Standard"),
     position: "bottom",
     description: "For users with colour blindness who need distinct, high-contrast subtitles"
   },
@@ -177,7 +192,7 @@ export default function App() {
     background: colorWithOpacity("#000000", 100),
     backgroundHex: "#000000",
     opacity: 100,
-    lineSpacing: 1.4,
+    lineSpacing: findLineSpacing("Medium"),
     position: "bottom",
     description: "For users with sensory sensitivities who need minimal visual interference"
   },
@@ -191,7 +206,8 @@ export default function App() {
     background: colorWithOpacity("#000000", 100),
     backgroundHex: "#000000",
     opacity: 100,
-    lineSpacing: 1.6,
+    lineSpacing: findLineSpacing("High"),
+    letterSpacing: findLetterSpacing("Increased"),
     position: "bottom",
     description: "For users with visual impairments who need large, high-contrast subtitles"
   }
@@ -205,7 +221,8 @@ export default function App() {
     sizes: sizes,
     colors: colors,
     backgrounds: backgrounds,
-    lineSpacings: lineSpacings
+    lineSpacings: lineSpacings,
+    letterSpacings: letterSpacings
   }
 
   const [appSettings, setAppSettings] = React.useState({
@@ -273,10 +290,10 @@ export default function App() {
         fontSize: `${appSettings.subtitleSettings.size}pt`,
         color: appSettings.subtitleSettings.color,
       }}>
-        <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background, whiteSpace: 'nowrap' }}>
+        <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, letterSpacing: `${appSettings.subtitleSettings.letterSpacing}rem`, textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background, whiteSpace: 'nowrap' }}>
           The journey begins now.
         </div>
-        <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background, whiteSpace: 'nowrap' }}>
+        <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, letterSpacing: `${appSettings.subtitleSettings.letterSpacing}rem`, textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background, whiteSpace: 'nowrap' }}>
           Are you ready?
         </div>
       </div>
