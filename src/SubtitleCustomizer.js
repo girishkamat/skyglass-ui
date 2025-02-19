@@ -292,9 +292,11 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
             <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
               <strong>Profiles</strong>
             </Typography>
-            <IconButton variant="contained" onClick={() => addEditOrCopy(0, "Add")}>
+            <Tooltip title="Add Profile" placement="right">
+              <IconButton variant="contained" onClick={() => addEditOrCopy(0, "Add")}>
                 <AddBoxTwoToneIcon fontSize="large" />
               </IconButton>
+            </Tooltip>
           </Box>
 
 
@@ -305,9 +307,11 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
                 key={profile.profileId}
                 secondaryAction={
                   <>
-                    {profile.preset && <IconButton edge="end" onClick={() => addEditOrCopy(profile.profileId, "Copy")}>
-                      <ContentCopyIcon />
-                    </IconButton>}
+                    {profile.preset &&
+                      <Tooltip title="Copy Profile" placement="right">
+                        <IconButton edge="end" onClick={() => addEditOrCopy(profile.profileId, "Copy")} >
+                          <ContentCopyIcon />
+                        </IconButton></Tooltip>}
                     {!profile.preset && <IconButton edge="end" onClick={() => addEditOrCopy(profile.profileId, "Edit")}>
                       <Edit />
                     </IconButton>}
