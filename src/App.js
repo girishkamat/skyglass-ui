@@ -71,7 +71,7 @@ export default function App() {
 
   function colorWithOpacity(colorHex, opacity) {
     const rgb = extractRgbFromHex(colorHex)
-    return `rgba(${rgb.red}, ${rgb.green}, ${rgb.blue}, ${opacity/100})`;
+    return `rgba(${rgb.red}, ${rgb.green}, ${rgb.blue}, ${opacity / 100})`;
   }
 
   function extractRgbFromHex(hex) {
@@ -90,15 +90,15 @@ export default function App() {
   }
 
   function findSize(sizeName) {
-    return sizes.entries().find(([key, value]) => value == sizeName)[0]
+    return sizes.entries().find(([key, value]) => value === sizeName)[0]
   }
 
   function findLetterSpacing(letterSpacingName) {
-    return letterSpacings.entries().find(([key, value]) => value == letterSpacingName)[0]
+    return letterSpacings.entries().find(([key, value]) => value === letterSpacingName)[0]
   }
 
   function findLineSpacing(lineSpacingName) {
-    return lineSpacings.entries().find(([key, value]) => value == lineSpacingName)[0]
+    return lineSpacings.entries().find(([key, value]) => value === lineSpacingName)[0]
   }
 
   const profileRefs = React.useRef([]);
@@ -118,103 +118,109 @@ export default function App() {
   ];
 
   const sizes = new Map([
-    [20, "Small"], [25, "Medium"], [30, "Large"], [35, "Extra Large"]
+    [19, "Small"], [23, "Medium"], [27, "Large"], [31, "Extra Large"]
   ])
 
   const colors = new Map([
-    ["#000000", "Black"], ["#FFFFFF", "White"], ["#FFFF00", "Yellow"], ["#CCCCCC", "Light Gray"], ["#FFFDD0", "Cream"], ["#B3EBF2", "Pastel Blue"], ["#0000FF", "Blue"], ["#A9A9A9", "Dark Gray"]
+    ["#000000", "Black"], ["#FFFFFF", "White"], ["#FAF9F6", "Off White"], ["#CCCCCC", "Light Gray"], ["#A9A9A9", "Dark Gray"], ["#FFFDD0", "Cream"], ["#FFFF00", "Yellow"], ["#B3EBF2", "Pastel Blue"]
   ])
 
   const backgrounds = new Map([
-    ["#FFFFFF", "White"], ["#000000", "Black"], ["#FFFF00", "Yellow"], ["#CCCCCC", "Light Gray"], ["#FFFDD0", "Cream"], ["#B3EBF2", "Pastel Blue"], ["#0000FF", "Blue"], ["#A9A9A9", "Dark Gray"]
+    ["#000000", "Black"], ["#FFFFFF", "White"], ["#FAF9F6", "Off White"], ["#CCCCCC", "Light Gray"], ["#A9A9A9", "Dark Gray"], ["#FFFDD0", "Cream"], ["#FFFF00", "Yellow"], ["#B3EBF2", "Pastel Blue"]
   ])
 
   const lineSpacings = new Map([
-    ["1.2", "Low"], ["1.4", "Medium"], ["1.6", "High"]
+    ["1.2", "Low"], ["1.5", "Medium"], ["1.6", "High"]
   ])
 
   const letterSpacings = new Map([
-    ["0", "Standard"], ["0.05", "Increased"], ["0.1", "Extra"]
+    ["0", "Default"], ["0.12", "Increased"], ["0.15", "Extra"]
   ])
 
-  const defaultProfiles = [{
-    profileId: 0,
-    profileName: 'Default',
-    preset: true,
-    font: "Arial, sans-serif",
-    size: findSize("Small"),
-    color: "#FFFFFF",
-    background: colorWithOpacity("#000000", 40),
-    backgroundHex: "#000000",
-    opacity: 40,
-    lineSpacing: findLineSpacing("Medium"),
-    letterSpacing: findLetterSpacing("Standard"),
-    position: "bottom",
-    description: "Industry standards for readability and accessibility"
-  },
-  {
-    profileId: 1,
-    profileName: 'Easy Read',
-    preset: true,
-    font: "OpenDyslexic",
-    size: findSize("Large"),
-    color: "#000000",
-    background: colorWithOpacity("#FFFDD0", 100),
-    backgroundHex: "#FFFDD0",
-    opacity: 100,
-    lineSpacing: findLineSpacing("High"),
-    letterSpacing: findLetterSpacing("Increased"),
-    position: "bottom",
-    description: "For users with dyslexia or cognitive processing challenges who need enhanced readability"
-  },
-  {
-    profileId: 2,
-    profileName: 'High Contrast',
-    preset: true,
-    font: "Arial, sans-serif",
-    size: findSize("Medium"),
-    color: "#FFFFFF",
-    background: colorWithOpacity("#000000", 100),
-    backgroundHex: "#000000",
-    opacity: 100,
-    lineSpacing: findLineSpacing("Medium"),
-    letterSpacing: findLetterSpacing("Standard"),
-    position: "bottom",
-    description: "For users with colour blindness who need distinct, high-contrast subtitles"
-  },
-  {
-    profileId: 3,
-    profileName: 'Low Distraction',
-    preset: true,
-    font: "Arial, sans-serif",
-    size: findSize("Medium"),
-    color: "#B3EBF2",
-    background: colorWithOpacity("#000000", 100),
-    backgroundHex: "#000000",
-    opacity: 100,
-    lineSpacing: findLineSpacing("Medium"),
-    position: "bottom",
-    description: "For users with sensory sensitivities who need minimal visual interference"
-  },
-  {
-    profileId: 4,
-    profileName: 'Ultra Visible',
-    preset: true,
-    font: "Arial, sans-serif",
-    size: findSize("Extra Large"),
-    color: "#FFFFFF",
-    background: colorWithOpacity("#000000", 100),
-    backgroundHex: "#000000",
-    opacity: 100,
-    lineSpacing: findLineSpacing("High"),
-    letterSpacing: findLetterSpacing("Increased"),
-    position: "bottom",
-    description: "For users with visual impairments who need large, high-contrast subtitles"
-  }
+  const defaultProfiles = [
+    {
+      profileId: 0,
+      profileName: 'No Subtitles',
+      description: 'Subtitles are switched off',
+    },
+    {
+      profileId: 1,
+      profileName: 'Default',
+      preset: true,
+      font: "Arial, sans-serif",
+      size: findSize("Medium"),
+      color: "#FFFFFF",
+      background: colorWithOpacity("#000000", 40),
+      backgroundHex: "#000000",
+      opacity: 40,
+      lineSpacing: findLineSpacing("Low"),
+      letterSpacing: findLetterSpacing("Default"),
+      position: "bottom",
+      description: "Default settings suitable for most users"
+    },
+    {
+      profileId: 2,
+      profileName: 'Easy Read',
+      preset: true,
+      font: "OpenDyslexic",
+      size: findSize("Large"),
+      color: "#000000",
+      background: colorWithOpacity("#FFFDD0", 100),
+      backgroundHex: "#FFFDD0",
+      opacity: 100,
+      lineSpacing: findLineSpacing("Medium"),
+      letterSpacing: findLetterSpacing("Increased"),
+      position: "bottom",
+      description: "For users having difficulties with word recognition, spelling, and decoding"
+    },
+    {
+      profileId: 3,
+      profileName: 'High Contrast',
+      preset: true,
+      font: "Arial, sans-serif",
+      size: findSize("Medium"),
+      color: "#FFFFFF",
+      background: colorWithOpacity("#000000", 100),
+      backgroundHex: "#000000",
+      opacity: 100,
+      lineSpacing: findLineSpacing("Medium"),
+      letterSpacing: findLetterSpacing("Increased"),
+      position: "bottom",
+      description: "Enhances readability through strong color contrasts between text and background"
+    },
+    {
+      profileId: 4,
+      profileName: 'Low Distraction',
+      preset: true,
+      font: "Arial, sans-serif",
+      size: findSize("Medium"),
+      color: "#B3EBF2",
+      background: colorWithOpacity("#000000", 70),
+      backgroundHex: "#000000",
+      opacity: 55,
+      lineSpacing: findLineSpacing("Medium"),
+      letterSpacing: findLetterSpacing("Increased"),
+      position: "bottom",
+      description: "For users who are hyper sensitive to light and require minimal visual interference"
+    },
+    {
+      profileId: 5,
+      profileName: 'Ultra Visible',
+      preset: true,
+      font: "Arial, sans-serif",
+      size: findSize("Extra Large"),
+      color: "#FFFFFF",
+      background: colorWithOpacity("#000000", 70),
+      backgroundHex: "#000000",
+      opacity: 70,
+      lineSpacing: findLineSpacing("High"),
+      letterSpacing: findLetterSpacing("Extra"),
+      position: "bottom",
+      description: "For users with visual impairments who need large, high-contrast subtitles"
+    }
   ]
 
   const subtitleSettings = {
-    switch: 'off',
     profileId: 0,
     profiles: defaultProfiles,
     fonts: fonts,
@@ -231,7 +237,7 @@ export default function App() {
     subtitlePopupAnchorEl: null,
     subtitleSettings: {
       ...subtitleSettings,
-      ...subtitleSettings.profiles.find((p) => p.profileId == subtitleSettings.profileId),
+      ...subtitleSettings.profiles.find((p) => p.profileId === subtitleSettings.profileId),
     }
   })
 
@@ -255,8 +261,7 @@ export default function App() {
       newAppSettings.visibleBottomNav = !appSettings.visibleBottomNav
       newAppSettings.subtitleSettings = {
         ...appSettings.subtitleSettings,
-        ...appSettings.subtitleSettings.profiles.find((p) => p.profileId == appSettings.subtitleSettings.profileId),
-        switch: 'on'
+        ...appSettings.subtitleSettings.profiles.find((p) => p.profileId === appSettings.subtitleSettings.profileId)
       }
       if (!newAppSettings.visibleBottomNav) {
         newAppSettings.bottomNavTabIndex = 0
@@ -287,7 +292,7 @@ export default function App() {
     return (
       <div style={{
         fontFamily: appSettings.subtitleSettings.font,
-        fontSize: `${appSettings.subtitleSettings.size}pt`,
+        fontSize: `${appSettings.subtitleSettings.size}px`,
         color: appSettings.subtitleSettings.color,
       }}>
         <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, letterSpacing: `${appSettings.subtitleSettings.letterSpacing}rem`, textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background, whiteSpace: 'nowrap' }}>
@@ -304,7 +309,7 @@ export default function App() {
   return (
     <div className="container" style={{ padding: '10px', display: 'flex' }}>
       <Box sx={{ maxWidth: '100%', maxHeight: '100%', display: 'inline-block', width: '1200px', position: 'relative', justifyContent: 'center' }}>
-        <img src='/movie5.jpg' className="movieImage" />
+        <img src='/movie.jpg' className="movieImage" alt="Movie background" />
         <ThemeProvider theme={darkTheme}>
           <Popper
             id={subtitlesPopperId}
@@ -333,7 +338,7 @@ export default function App() {
             </BottomNavigation>
             : ""}
         </ThemeProvider>
-        {appSettings.subtitleSettings.switch === "on" && appSettings.visibleBottomNav === false &&
+        {appSettings.subtitleSettings.profileId >= 1 && appSettings.visibleBottomNav === false &&
           <div
             style={{
               position: 'absolute',
@@ -346,7 +351,7 @@ export default function App() {
           </div>}
       </Box>
       <div className="remoteContainer">
-        <img onClick={handleRemoteClick} ref={remoteImg} src='/sky-remote.jpg' className="remoteImage" />
+        <img onClick={handleRemoteClick} ref={remoteImg} src='/sky-remote.jpg' className="remoteImage" alt='SKY Glass Remote' />
       </div>
     </div>
   );
