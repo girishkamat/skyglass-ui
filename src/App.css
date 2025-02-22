@@ -7,25 +7,29 @@
 
 
 .container {
-  display:grid;
-  grid-template-columns: 20fr 80fr;
+  display:flex;
   background-color: #ffffff;
   color: "#444";
+  min-height: 100vh;
+  height: 100vh;
+  width: 100vw;
 }
 
 .remoteContainer {
-  display:block;
-  padding: 50px;
+  padding: 20px;
 }
 
 .remoteImage {
-  width: 250px;
+  max-width: 94vw;
+  max-height: 94vh;
   bottom:0;
+  height: auto;
+  width: '94vw';
 }
 
 .movieImage {
-  max-width: 100%;
-  max-height: 100%;
+  max-width: 90vw;
+  max-height: 94vh;
   border-style: ridge;
   border-width: 20px; 
   border-color: grey;

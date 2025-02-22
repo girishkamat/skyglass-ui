@@ -307,8 +307,8 @@ export default function App() {
   }
 
   return (
-    <div className="container" style={{ padding: '10px', display: 'flex' }}>
-      <Box sx={{ maxWidth: '100%', maxHeight: '100%', display: 'inline-block', width: '1200px', position: 'relative', justifyContent: 'center' }}>
+    <div className="container">
+      <Box sx={{ position: 'relative', justifyContent: 'center' }}>
         <img src='/movie.jpg' className="movieImage" alt="Movie background" />
         <ThemeProvider theme={darkTheme}>
           <Popper
@@ -328,7 +328,7 @@ export default function App() {
               onChange={(event, newValue) => {
                 setAppSettings({ ...appSettings, bottomNavTabIndex: newValue })
               }}
-              sx={{ position: 'relative', left: 20, bottom: 80, width: '100%' }}
+              sx={{ position: 'relative', left: 20, bottom: 80, width: '97%' }}
             >
               <BottomNavigationAction label="Search" icon={<SearchIcon />} />
               <BottomNavigationAction label="Subtitles" icon={<SubtitlesIcon />} />

@@ -254,7 +254,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
 
   return (
     <div style={{
-      width: '1200px', display: 'grid',
+      display: 'grid',
       placeItems: 'center'
     }}>
       {(profileData.profileId >= 1 || editMode) && (<div style={{
@@ -274,7 +274,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
         </div>
       </div>)}
 
-      <Stack direction="row" sx={{ backgroundColor: 'background.paper', padding: '20px', borderRadius: '15px', height: '645px', width: '710px' }} spacing={1}>
+      <Stack direction="row" sx={{ backgroundColor: 'background.paper', padding: '20px', borderRadius: '15px'}} spacing={1}>
 
         {/* <Stack sx={{ padding: '20px', borderRight: 1, width: '100px' }} spacing={2}>
           <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
@@ -308,7 +308,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
           </Box>
 
 
-          <List dense={true} sx={{ color: 'text.primary', width: '100%', maxWidth: 410, overflowX: 'hidden', overflowY: 'auto' }}>
+          <List dense={true} sx={{ color: 'text.primary', minHeight: '57vh', maxHeight: '57vh', minWidth: '30vw', maxWidth: '30vw', overflowY: 'auto' }}>
             {appSettings.subtitleSettings.profiles.map((profile, index) => (
               <ListItem
                 disablePadding
@@ -363,7 +363,8 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
             borderRadius: '15px',
             padding: "25px",
             marginLeft: "10px",
-            backgroundColor: 'action.disabledBackground'
+            backgroundColor: 'action.disabledBackground',
+            maxHeight: '63vh', overflowY: 'auto'
           }}>
             <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
               <strong>{profileData.mode} Profile</strong>
