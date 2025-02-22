@@ -294,11 +294,13 @@ export default function App() {
         fontFamily: appSettings.subtitleSettings.font,
         fontSize: `${appSettings.subtitleSettings.size}px`,
         color: appSettings.subtitleSettings.color,
+        display: 'grid',
+        placeItems: 'center'
       }}>
-        <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, letterSpacing: `${appSettings.subtitleSettings.letterSpacing}rem`, textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background, whiteSpace: 'nowrap' }}>
+        <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, display: 'inline', letterSpacing: `${appSettings.subtitleSettings.letterSpacing}rem`, textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background, whiteSpace: 'nowrap' }}>
           The journey begins now.
         </div>
-        <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, letterSpacing: `${appSettings.subtitleSettings.letterSpacing}rem`, textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background, whiteSpace: 'nowrap' }}>
+        <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, display: 'inline', letterSpacing: `${appSettings.subtitleSettings.letterSpacing}rem`, textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background, whiteSpace: 'nowrap' }}>
           Are you ready?
         </div>
       </div>

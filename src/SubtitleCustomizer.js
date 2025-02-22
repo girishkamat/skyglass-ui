@@ -253,28 +253,25 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
   })
 
   return (
-    <div style={{
-      display: 'grid',
-      placeItems: 'center'
-    }}>
+    <div>
       {(profileData.profileId >= 1 || editMode) && (<div style={{
-        padding: '5px',
         marginBottom: '5px',
         fontFamily: profileData.font,
         fontSize: `${profileData.size}px`,
-        color: profileData.color
+        color: profileData.color,
+        display: 'grid',
+        placeItems: 'center'
       }}>
-        <div style={{ display: 'inline-block' }}>
-          <div style={{ lineHeight: profileData.lineSpacing, letterSpacing: `${profileData.letterSpacing}rem`, textAlign: 'center', display: 'block', backgroundColor: profileData.background }}>
-            Preview subtitle
-          </div>
-          <div style={{ lineHeight: profileData.lineSpacing, letterSpacing: `${profileData.letterSpacing}rem`, textAlign: 'center', display: 'block', backgroundColor: profileData.background }}>
-            Preview subtitle again
-          </div>
+        <div style={{ lineHeight: profileData.lineSpacing, letterSpacing: `${profileData.letterSpacing}rem`, textAlign: 'center', display: 'inline', backgroundColor: profileData.background, whiteSpace: 'nowrap' }}>
+          Preview subtitle
+        </div>
+
+        <div style={{ lineHeight: profileData.lineSpacing, letterSpacing: `${profileData.letterSpacing}rem`, textAlign: 'center', display: 'inline', backgroundColor: profileData.background, whiteSpace: 'nowrap' }}>
+          Preview subtitle again
         </div>
       </div>)}
 
-      <Stack direction="row" sx={{ backgroundColor: 'background.paper', padding: '20px', borderRadius: '15px'}} spacing={1}>
+      <Stack direction="row" sx={{ backgroundColor: 'background.paper', padding: '20px', borderRadius: '15px' }} spacing={1}>
 
         {/* <Stack sx={{ padding: '20px', borderRight: 1, width: '100px' }} spacing={2}>
           <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
