@@ -309,7 +309,7 @@ export default function App() {
   return (
     <div className="container">
       <Box sx={{ position: 'relative', justifyContent: 'center' }}>
-        <img src='/movie.jpg' className="movieImage" alt="Movie background" />
+        <img src='/skyglass.jpg' className="movieImage" alt="Movie background" />
         <ThemeProvider theme={darkTheme}>
           <Popper
             id={subtitlesPopperId}
