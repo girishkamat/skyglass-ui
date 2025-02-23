@@ -97,9 +97,9 @@ export default function App() {
     return letterSpacings.entries().find(([key, value]) => value === letterSpacingName)[0]
   }
 
-  function findLineSpacing(lineSpacingName) {
-    return lineSpacings.entries().find(([key, value]) => value === lineSpacingName)[0]
-  }
+  // function findLineSpacing(lineSpacingName) {
+  //   return lineSpacings.entries().find(([key, value]) => value === lineSpacingName)[0]
+  // }
 
   const profileRefs = React.useRef([]);
   const remoteImg = React.useRef(null);
@@ -107,13 +107,10 @@ export default function App() {
 
   const fonts = [
     "Arial, sans-serif",
-    "Courier New, monspace",
     "Helvetica, sans-serif",
     "OpenDyslexic",
     "Roboto",
     "Tahoma, sans-serif",
-    "Times New Roman, serif",
-    "Tiresias, sans-serif",
     "Verdana, sans-serif",
   ];
 
@@ -129,19 +126,19 @@ export default function App() {
     ["#000000", "Black"], ["#FFFFFF", "White"], ["#FAF9F6", "Off White"], ["#CCCCCC", "Light Gray"], ["#A9A9A9", "Dark Gray"], ["#FFFDD0", "Cream"], ["#FFFF00", "Yellow"], ["#B3EBF2", "Pastel Blue"]
   ])
 
-  const lineSpacings = new Map([
-    ["1.2", "Low"], ["1.5", "Medium"], ["1.6", "High"]
-  ])
+  // const lineSpacings = new Map([
+  //   ["normal", "Normal"], ["1.2", "Low"], ["1.5", "Medium"], ["1.6", "High"]
+  // ])
 
   const letterSpacings = new Map([
-    ["0", "Default"], ["0.12", "Increased"], ["0.15", "Extra"]
+    ["0", "Normal"], ["0.12", "Increased"], ["0.15", "Extra"]
   ])
 
   const defaultProfiles = [
     {
       profileId: 0,
       profileName: 'No Subtitles',
-      description: 'Subtitles are switched off',
+      description: ' ',
     },
     {
       profileId: 1,
@@ -153,10 +150,10 @@ export default function App() {
       background: colorWithOpacity("#000000", 40),
       backgroundHex: "#000000",
       opacity: 40,
-      lineSpacing: findLineSpacing("Low"),
-      letterSpacing: findLetterSpacing("Default"),
+      //lineSpacing: findLineSpacing("Low"),
+      letterSpacing: findLetterSpacing("Normal"),
       position: "bottom",
-      description: "Default settings suitable for most users"
+      description: " "
     },
     {
       profileId: 2,
@@ -168,10 +165,10 @@ export default function App() {
       background: colorWithOpacity("#FFFDD0", 100),
       backgroundHex: "#FFFDD0",
       opacity: 100,
-      lineSpacing: findLineSpacing("Medium"),
+      //lineSpacing: findLineSpacing("Medium"),
       letterSpacing: findLetterSpacing("Increased"),
       position: "bottom",
-      description: "For users having difficulties with word recognition, spelling, and decoding"
+      description: "Improves reading accuracy and comprehension"
     },
     {
       profileId: 3,
@@ -183,10 +180,10 @@ export default function App() {
       background: colorWithOpacity("#000000", 100),
       backgroundHex: "#000000",
       opacity: 100,
-      lineSpacing: findLineSpacing("Medium"),
+      //lineSpacing: findLineSpacing("Medium"),
       letterSpacing: findLetterSpacing("Increased"),
       position: "bottom",
-      description: "Enhances readability through strong color contrasts between text and background"
+      description: "Improves readability through enhanced contrast"
     },
     {
       profileId: 4,
@@ -195,13 +192,13 @@ export default function App() {
       font: "Arial, sans-serif",
       size: findSize("Medium"),
       color: "#B3EBF2",
-      background: colorWithOpacity("#000000", 70),
+      background: colorWithOpacity("#000000", 100),
       backgroundHex: "#000000",
-      opacity: 55,
-      lineSpacing: findLineSpacing("Medium"),
+      opacity: 100,
+      //lineSpacing: findLineSpacing("Medium"),
       letterSpacing: findLetterSpacing("Increased"),
       position: "bottom",
-      description: "For users who are hyper sensitive to light and require minimal visual interference"
+      description: "Reduces visual interference"
     },
     {
       profileId: 5,
@@ -210,13 +207,13 @@ export default function App() {
       font: "Arial, sans-serif",
       size: findSize("Extra Large"),
       color: "#FFFFFF",
-      background: colorWithOpacity("#000000", 70),
+      background: colorWithOpacity("#000000", 100),
       backgroundHex: "#000000",
-      opacity: 70,
-      lineSpacing: findLineSpacing("High"),
+      opacity: 100,
+      //lineSpacing: findLineSpacing("High"),
       letterSpacing: findLetterSpacing("Extra"),
       position: "bottom",
-      description: "For users with visual impairments who need large, high-contrast subtitles"
+      description: "Maximises size for visbility"
     }
   ]
 
@@ -227,7 +224,7 @@ export default function App() {
     sizes: sizes,
     colors: colors,
     backgrounds: backgrounds,
-    lineSpacings: lineSpacings,
+    //lineSpacings: lineSpacings,
     letterSpacings: letterSpacings
   }
 
@@ -297,10 +294,10 @@ export default function App() {
         display: 'grid',
         placeItems: 'center'
       }}>
-        <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, display: 'inline', letterSpacing: `${appSettings.subtitleSettings.letterSpacing}rem`, textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background, whiteSpace: 'nowrap' }}>
+        <div style={{ display: 'inline', letterSpacing: `${appSettings.subtitleSettings.letterSpacing}rem`, textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background, whiteSpace: 'nowrap' }}>
           The journey begins now.
         </div>
-        <div style={{ lineHeight: appSettings.subtitleSettings.lineSpacing, display: 'inline', letterSpacing: `${appSettings.subtitleSettings.letterSpacing}rem`, textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background, whiteSpace: 'nowrap' }}>
+        <div style={{ display: 'inline', letterSpacing: `${appSettings.subtitleSettings.letterSpacing}rem`, textAlign: 'center', backgroundColor: appSettings.subtitleSettings.background, whiteSpace: 'nowrap' }}>
           Are you ready?
         </div>
       </div>
@@ -311,7 +308,7 @@ export default function App() {
   return (
     <div className="container">
       <Box sx={{ position: 'relative', justifyContent: 'center' }}>
-        <img src='/skyglass.jpg' className="movieImage" alt="Movie background" />
+        <img src='/movie.jpg' className="movieImage" alt="Movie background" />
         <ThemeProvider theme={darkTheme}>
           <Popper
             id={subtitlesPopperId}

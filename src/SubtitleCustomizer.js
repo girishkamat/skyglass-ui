@@ -237,10 +237,10 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
     })
   }
 
-  const handleLineSpacingChange = (e) => setProfileData({
-    ...profileData,
-    ...{ lineSpacing: e.target.value }
-  })
+  // const handleLineSpacingChange = (e) => setProfileData({
+  //   ...profileData,
+  //   ...{ lineSpacing: e.target.value }
+  // })
 
   const handleLetterSpacingChange = (e) => setProfileData({
     ...profileData,
@@ -262,11 +262,11 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
         display: 'grid',
         placeItems: 'center'
       }}>
-        <div style={{ lineHeight: profileData.lineSpacing, letterSpacing: `${profileData.letterSpacing}rem`, textAlign: 'center', display: 'inline', backgroundColor: profileData.background, whiteSpace: 'nowrap' }}>
+        <div style={{ letterSpacing: `${profileData.letterSpacing}rem`, textAlign: 'center', display: 'inline', backgroundColor: profileData.background, whiteSpace: 'nowrap' }}>
           Preview subtitle
         </div>
 
-        <div style={{ lineHeight: profileData.lineSpacing, letterSpacing: `${profileData.letterSpacing}rem`, textAlign: 'center', display: 'inline', backgroundColor: profileData.background, whiteSpace: 'nowrap' }}>
+        <div style={{ letterSpacing: `${profileData.letterSpacing}rem`, textAlign: 'center', display: 'inline', backgroundColor: profileData.background, whiteSpace: 'nowrap' }}>
           Preview subtitle again
         </div>
       </div>)}
@@ -305,7 +305,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
           </Box>
 
 
-          <List dense={true} sx={{ color: 'text.primary', minHeight: '57vh', maxHeight: '57vh', minWidth: '30vw', maxWidth: '30vw', overflowY: 'auto' }}>
+          <List dense={true} sx={{ color: 'text.primary', minHeight: '51vh', maxHeight: '51vh', minWidth: '24vw', maxWidth: '24vw', overflowY: 'auto' }}>
             {appSettings.subtitleSettings.profiles.map((profile, index) => (
               <ListItem
                 disablePadding
@@ -460,7 +460,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
               />
             </FormControl>
 
-            <FormControl>
+            {/* <FormControl>
               <InputLabel id="lineSpacing-label">Line Spacing</InputLabel>
               <Select
                 labelId="lineSpacing-label"
@@ -474,7 +474,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
                   <MenuItem key={key} value={key}>{value}</MenuItem>
                 ))}
               </Select>
-            </FormControl>
+            </FormControl> */}
 
             <FormControl>
               <InputLabel id="letterSpacing-label">Letter Spacing</InputLabel>
