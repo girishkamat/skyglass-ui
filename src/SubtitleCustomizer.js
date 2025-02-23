@@ -298,14 +298,26 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
               <strong>Profiles</strong>
             </Typography>
             <Tooltip title="Add Profile" placement="right">
-              <IconButton variant="contained" onClick={() => addEditOrCopy("Add")}>
+              <IconButton variant="contained" onClick={() => addEditOrCopy("Add")} sx={{ 
+                opacity: editMode ? 0.5 : 1,   // Grey out effect
+                pointerEvents: editMode ? "none" : "auto", // Prevent interactions
+              }}>
                 <AddBoxTwoToneIcon style={{ fontSize: 40 }} color="primary" />
               </IconButton>
             </Tooltip>
           </Box>
 
 
-          <List dense={true} sx={{ color: 'text.primary', minHeight: '51vh', maxHeight: '51vh', minWidth: '24vw', maxWidth: '24vw', overflowY: 'auto' }}>
+          <List dense={true} sx={{ 
+            color: 'text.primary', 
+            minHeight: '51vh', 
+            maxHeight: '51vh', 
+            minWidth: '24vw', 
+            maxWidth: '24vw', 
+            overflowY: 'auto',
+            opacity: editMode ? 0.5 : 1,   // Grey out effect
+            pointerEvents: editMode ? "none" : "auto", // Prevent interactions
+          }}>
             {appSettings.subtitleSettings.profiles.map((profile, index) => (
               <ListItem
                 disablePadding
