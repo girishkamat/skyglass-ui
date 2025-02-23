@@ -297,7 +297,7 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
             <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
               <strong>Profiles</strong>
             </Typography>
-            <Tooltip title="Add Profile" placement="right">
+            <Tooltip title="Add Profile" arrow>
               <IconButton variant="contained" onClick={() => addEditOrCopy("Add")} sx={{ 
                 opacity: editMode ? 0.5 : 1,   // Grey out effect
                 pointerEvents: editMode ? "none" : "auto", // Prevent interactions
@@ -325,17 +325,20 @@ export default function SubtitleCustomizer({ appSettings, setAppSettings, profil
                 secondaryAction={
                   <>
                     {profile.preset &&
-                      <Tooltip title="Copy Profile" placement="right">
+                      <Tooltip title="Copy Profile" arrow>
                         <IconButton edge="end" onClick={() => addEditOrCopy("Copy", profile.profileId)} >
                           <ContentCopyIcon color="primary" />
                         </IconButton></Tooltip>}
-                    {profile.profileId >= 1 && !profile.preset && <IconButton edge="end" onClick={() => addEditOrCopy("Edit", profile.profileId)}>
+                    {profile.profileId >= 1 && !profile.preset && 
+                     <Tooltip title="Edit Profile" arrow>
+                    <IconButton edge="end" onClick={() => addEditOrCopy("Edit", profile.profileId)}>
                       <Edit color="primary" />
-                    </IconButton>}
+                    </IconButton></Tooltip>}
                     {profile.profileId >= 1 && !profile.preset &&
+                     <Tooltip title="Delete Profile" arrow>
                       <IconButton edge="end" onClick={() => handleDeleteProfile(profile.profileId)}>
                         <DeleteIcon key={profile.profileId} color="primary" />
-                      </IconButton>}
+                      </IconButton></Tooltip>}
                   </>}
               >
 
